@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>com.github.ocraft</groupId>
+  <artifactId>ocraft-s2client</artifactId>
+  <versioning>
+    <versions>
+      <version>0.1.5-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20180621073015</lastUpdated>
+  </versioning>
+</metadata>

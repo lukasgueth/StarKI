@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+group 'de.uni-passau.fim.sommercamp'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+allprojects {
+    repositories {
+        maven {
+            url './libs'
+        }
+        jcenter()
+        mavenCentral()
+    }
+}
+
+dependencies {
+    compile group: 'de.uni-passau.fim.sommercamp', name: 'SC2', version: '1.0-SNAPSHOT'
+}
+
+task run (type: JavaExec, dependsOn: classes) {
+    if(project.hasProperty('appargs')){
+        args(appargs.split(','))
+    }
+    description = "Main task for running Starcraft II bots."
+    main = "de.uni_passau.fim.sommercamp.sc2.Main"
+    classpath = sourceSets.main.runtimeClasspath
+}
