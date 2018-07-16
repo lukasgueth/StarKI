@@ -26,7 +26,7 @@ public class EmptyBot extends BaseBot {
     }
 
     /**
-     * This method is call every step by the framework. The game loop consists of calling this method for every bot and
+     * This method is called every step by the framework. The game loop consists of calling this method for every bot and
      * executing the invoked actions inside the game.
      */
     @Override
