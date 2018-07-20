@@ -32,6 +32,6 @@ task run (type: JavaExec, dependsOn: classes) {
         args(appargs.split(','))
     }
     description = "Main task for running Starcraft II bots."
-    main = "de.uni_passau.fim.sommercamp.sc2.Main"
+    main = "de.uni_passau.fim.sommercamp.sc2.ControlGUI"
     classpath = sourceSets.main.runtimeClasspath
 }
