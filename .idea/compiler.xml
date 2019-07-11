@@ -2,7 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="SC2Bots_main" target="1.8" />
+      <module name="SC2Bots.main" target="11" />
+      <module name="SC2Bots.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

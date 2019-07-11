@@ -13,25 +13,29 @@ idea {
 group 'de.uni-passau.fim.sommercamp'
 version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
     maven {
         url uri('./libs')
+    }
+    maven{
+        url = "https://jitpack.io"
     }
     jcenter()
     mavenCentral()
 }
 
 dependencies {
-    compile group: 'de.uni-passau.fim.sommercamp', name: 'SC2', version: '1.0-SNAPSHOT'
+    compile group: 'de.uni-passau.fim.sommercamp', name: 'SC2', version: '2.0-SNAPSHOT'
 }
 
 task run (type: JavaExec, dependsOn: classes) {
     if(project.hasProperty('appargs')){
         args(appargs.split(','))
     }
+    args += "-gui"
     description = "Main task for running Starcraft II bots."
-    main = "de.uni_passau.fim.sommercamp.sc2.ControlGUI"
+    main = "de.uni_passau.fim.sommercamp.sc2.Main"
     classpath = sourceSets.main.runtimeClasspath
 }
