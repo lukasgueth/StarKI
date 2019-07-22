@@ -9,7 +9,7 @@
     <dependency>
       <groupId>com.github.fheck</groupId>
       <artifactId>ocraft-s2client</artifactId>
-      <version>23a755ed5c</version>
+      <version>e469bc68b7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

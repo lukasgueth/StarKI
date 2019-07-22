@@ -10,16 +10,16 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Gradle: de.uni-passau.fim.sommercamp:SC2:2.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.fheck:ocraft-s2client:23a755ed5c" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.fheck:ocraft-s2client:e469bc68b7" level="project" />
     <orderEntry type="library" name="Gradle: args4j:args4j:2.33" level="project" />
     <orderEntry type="library" name="Gradle: commons-io:commons-io:2.6" level="project" />
     <orderEntry type="library" name="Gradle: org.reflections:reflections:0.9.11" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-benchmark:23a755ed5c" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-sample:23a755ed5c" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-bot:23a755ed5c" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-api:23a755ed5c" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-protocol:23a755ed5c" level="project" />
-    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-test:23a755ed5c" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-benchmark:e469bc68b7" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-sample:e469bc68b7" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-bot:e469bc68b7" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-api:e469bc68b7" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-protocol:e469bc68b7" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.fheck.ocraft-s2client:ocraft-s2client-test:e469bc68b7" level="project" />
     <orderEntry type="library" name="Gradle: com.google.guava:guava:20.0" level="project" />
     <orderEntry type="library" name="Gradle: org.javassist:javassist:3.23.1-GA" level="project" />
     <orderEntry type="library" name="Gradle: io.vertx:vertx-web-client:3.7.0" level="project" />

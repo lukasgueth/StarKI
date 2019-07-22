@@ -1,6 +1,9 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'java'
     id 'idea'
+    id 'application'
 }
 
 idea {
@@ -28,14 +31,37 @@ repositories {
 
 dependencies {
     compile group: 'de.uni-passau.fim.sommercamp', name: 'SC2', version: '2.0-SNAPSHOT'
+    runtime Os.isFamily(Os.FAMILY_UNIX) ?
+            "com.github.boehmseb:ocraft-s2client:b8ae4fc23d" :
+            "com.github.fheck:ocraft-s2client:e469bc68b7"
 }
 
-task run (type: JavaExec, dependsOn: classes) {
+jar {
+    manifest {
+        attributes(
+                'Class-Path': sourceSets.main.runtimeClasspath,
+                'Main-Class': "de.uni_passau.fim.sommercamp.sc2.Main"
+        )
+    }
+}
+
+def mainClass = 'de.uni_passau.fim.sommercamp.sc2.Main'
+
+startScripts {
+    applicationName = rootProject.name
+    mainClassName = mainClass
+}
+
+application {
+    mainClassName = mainClass
+}
+
+task run (type: JavaExec, dependsOn: classes, overwrite: true) {
     if(project.hasProperty('appargs')){
         args(appargs.split(','))
     }
     args += "-gui"
     description = "Main task for running Starcraft II bots."
-    main = "de.uni_passau.fim.sommercamp.sc2.Main"
+    main = mainClass
     classpath = sourceSets.main.runtimeClasspath
 }
