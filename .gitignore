@@ -68,6 +68,11 @@ out/
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
 
+# Other Intellij config
+.idea/.gitignore
+.idea/codeStyles/
+.idea/qaplug_profiles.xml
+
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
@@ -81,3 +86,6 @@ build/
 
 ### Lib files
 !libs/**/*.jar
+
+# runtime config
+config
