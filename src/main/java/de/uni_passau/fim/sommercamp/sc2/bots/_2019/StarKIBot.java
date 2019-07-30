@@ -19,6 +19,7 @@ public class StarKIBot extends AbstractBot {
     Unit myScout;
     Boolean scouting;
     Boolean scoutNextToTeam;
+    List<Integer> unitsWaitedForMajorUnitsToMove;
 
     /**
      * This constructor is called by the framework. Extend it with all necessary setup, other constructors won't work.
@@ -194,6 +195,57 @@ public class StarKIBot extends AbstractBot {
     /* */
 
     /**
+     * Team methods
+     */
+
+    private void moveTeam(String mode) {
+        switch (mode) {
+            case "towardsEnemy":
+                // Check if BigTanks are already moving towards enemy
+                if (unitsWaitedForMajorUnitsToMove.get(1) < 3) {
+                    for (Unit bigTank: getMyBigTanks()) {
+                        bigTank.move(enemyLocation);
+                    }
+
+                    unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
+
+                } else if (unitsWaitedForMajorUnitsToMove.get(1) >= 3) {
+                    for (Unit Tank: getMyTanks()) {
+                        Tank.move(enemyLocation);
+                    }
+
+                    unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
+                } else if (unitsWaitedForMajorUnitsToMove.get(0) > 2) {
+                    for (Unit soldier: getMySoldiers()) {
+                        soldier.move(enemyLocation);
+                    }
+
+                    for (Unit medic: getMyMedics()) {
+                        medic.move(enemyLocation);
+                    }
+                }
+                break;
+            case "backwards":
+                if (!healerHealing()) {
+
+                }
+                break;
+        }
+    }
+
+    /* */
+
+    /**
+     * Healer methods
+     */
+
+    private boolean healerHealing() {
+        return true;
+    }
+
+    /* */
+
+    /**
      * This method is called every step by the framework. The game loop consists of calling this method for every bot
      * and executing the invoked actions inside the game.
      */
@@ -206,6 +258,10 @@ public class StarKIBot extends AbstractBot {
             workers = getMyUnits();
 
             scoutNextToTeam = true;
+
+            unitsWaitedForMajorUnitsToMove = new ArrayList();
+            unitsWaitedForMajorUnitsToMove.add(0, 0);
+            unitsWaitedForMajorUnitsToMove.add(1, 0);
         }
 
         if (!foundEnemy() && scoutNextToTeam == true) {
@@ -223,6 +279,8 @@ public class StarKIBot extends AbstractBot {
 
                 if (scoutNearTeam()) {
                     printDebugString("Scout is back Home!");
+
+                    moveTeam("towardsEnemy");
                 }
             }
         }
