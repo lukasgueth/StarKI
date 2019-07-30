@@ -67,7 +67,7 @@ public class StarKIBot extends AbstractBot {
             workers = getMyUnits();
         }
 
-        if (getGameLoop() / 20 == 1) {
+        if (getGameLoop() / 5 == 1) {
             scout();
         }
 
