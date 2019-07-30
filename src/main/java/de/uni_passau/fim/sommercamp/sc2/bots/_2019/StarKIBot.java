@@ -15,8 +15,10 @@ public class StarKIBot extends AbstractBot {
 
     String name;
     List<Unit> workers;
-    List<Integer> enemyLocation;
+    Vec2 enemyLocation;
     Unit myScout;
+    Boolean scouting;
+    Boolean scoutNextToTeam;
 
     /**
      * This constructor is called by the framework. Extend it with all necessary setup, other constructors won't work.
@@ -88,6 +90,10 @@ public class StarKIBot extends AbstractBot {
         return getEnemyUnits().size() > 0 ? true : false;
     }
 
+    /**
+     * Scout methods
+     */
+
     private void pickScout() {
         // Check if at least one bigTank is alive and pick it as a scout
         // Else if pick a normal tank
@@ -104,10 +110,52 @@ public class StarKIBot extends AbstractBot {
     private void scout() {
         pickScout();
 
-        if (!foundEnemy()) {
-            myScout.move(getRandomPointOnMap());
-        }
+        myScout.move(getRandomPointOnMap());
+        scouting = true;
     }
+
+    private void returnScoutToTeam() {
+        printDebugString("Scout returns to Team.");
+
+        // Clear order queue of scout
+        myScout.stop();
+
+        printDebugString("Cleared orders of Scout.");
+
+        myScout.move(getMyMedics().get(0).getPosition());
+
+        scoutNextToTeam = false;
+    }
+
+    private boolean scoutNearTeam() {
+        Boolean nearTeam = false;
+
+        List<Float> teamPosition = new ArrayList();
+        if (getMyMedics().size() > 0) {
+            teamPosition.add(0, getMyMedics().get(0).getPosition().getX());
+            teamPosition.add(1, getMyMedics().get(0).getPosition().getY());
+        } else if (getMySoldiers().size() > 0) {
+            teamPosition.add(0, getMySoldiers().get(0).getPosition().getX());
+            teamPosition.add(1, getMySoldiers().get(0).getPosition().getY());
+        } else if (getMyTanks().size() > 0) {
+            teamPosition.add(0, getMyTanks().get(0).getPosition().getX());
+            teamPosition.add(1, getMyTanks().get(0).getPosition().getY());
+        } else if (getMyBigTanks().size() > 0) {
+            teamPosition.add(0, getMyBigTanks().get(0).getPosition().getX());
+            teamPosition.add(1, getMyBigTanks().get(0).getPosition().getY());
+        }
+
+        if (teamPosition.get(0) - myScout.getPosition().getX() < 2.5 || teamPosition.get(0) - myScout.getPosition().getX() > -2.5) {
+            if (teamPosition.get(1) - myScout.getPosition().getY() < 2.5 || teamPosition.get(1) - myScout.getPosition().getY() > -2.5) {
+                printDebugString("Scout is near Team.");
+                return true;
+            }
+        }
+
+        return nearTeam;
+    }
+
+    /* */
 
     /**
      * This method is called every step by the framework. The game loop consists of calling this method for every bot
@@ -120,11 +168,29 @@ public class StarKIBot extends AbstractBot {
         // Only in the first GameLoop
         if (getGameLoop() == 1) {
             workers = getMyUnits();
+
+            scoutNextToTeam = true;
         }
 
-        if (getGameLoop() % 100 == 1) {
-            scout();
+        if (!foundEnemy() && scoutNextToTeam == true) {
+            if (getGameLoop() % 100 == 1) {
+                scout();
+            }
+        } else {
+            if (scouting) {
+                scouting = false;
+
+                // Push enemyCoordinates
+                enemyLocation = myScout.getPosition();
+
+                returnScoutToTeam();
+
+                if (scoutNearTeam()) {
+                    printDebugString("Scout is back Home!");
+                }
+            }
         }
 
+        Boolean egal = scoutNearTeam();
     }
 }
