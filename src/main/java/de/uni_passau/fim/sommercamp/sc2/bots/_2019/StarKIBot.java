@@ -71,26 +71,5 @@ public class StarKIBot extends AbstractBot {
             workers = getMyUnits();
         }
 
-        for (int i=0; i < workers.size(); i++) {
-
-            if (workers.get(i) == null || workers.get(i).isAliveAndVisible()) {
-
-                /* for (Unit unit: getEnemyUnits()) {
-                    workers.get(i).queueAttack(unit);
-                    printDebugString("Worker"  + Integer.toString(i) + " attackiert!");
-                }
-                 */
-
-                if (workers.get(i).getOrders().isEmpty()) {
-                    scout();
-                }
-            }
-        }
-
-        /* if (workers.get(i).getOrders().isEmpty()) {
-            workers.get(i).move(getRandomPointOnMap());
-        }
-
-         */
     }
 }
