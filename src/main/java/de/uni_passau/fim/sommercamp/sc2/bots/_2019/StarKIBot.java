@@ -208,13 +208,13 @@ public class StarKIBot extends AbstractBot {
 
                     unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
 
-                } else if (unitsWaitedForMajorUnitsToMove.get(0) < 2) {
+                } else if (unitsWaitedForMajorUnitsToMove.get(1) >= 3) {
                     for (Unit Tank: getMyTanks()) {
                         Tank.move(enemyLocation);
                     }
 
                     unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
-                } else {
+                } else if (unitsWaitedForMajorUnitsToMove.get(0) > 2) {
                     for (Unit soldier: getMySoldiers()) {
                         soldier.move(enemyLocation);
                     }
