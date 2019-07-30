@@ -23,14 +23,9 @@ public class StarKIBot extends AbstractBot {
      */
     public StarKIBot() { name = "Empty Bot"; }
 
-    private void attack(Unit myunit, Unit enemy) {
-
-    }
-
-    private Boolean foundEnemy() {
-        // return getEnemyUnits().size() > 0 ? true : false;
-        return false;
-    }
+    /**
+     * Get Unit methods
+    */
 
     private List<Unit> getEnemyMedics() {
         List<Unit> medics = new ArrayList<>();
@@ -87,9 +82,23 @@ public class StarKIBot extends AbstractBot {
         return soldiers;
     }
 
+    /**/
+
+    private Boolean foundEnemy() {
+        return getEnemyUnits().size() > 0 ? true : false;
+    }
 
     private void pickScout() {
-        myScout = workers.get(0);
+        // Check if at least one bigTank is alive and pick it as a scout
+        // Else if pick a normal tank
+        // Else if pick a marine
+        if (getMyBigTanks().size() > 0) {
+            myScout = getMyBigTanks().get(0);
+        } else if (getMyTanks().size() > 0) {
+            myScout = getMyTanks().get(0);
+        } else {
+            myScout = getMySoldiers().get(0);
+        }
     }
 
     private void scout() {
@@ -113,7 +122,7 @@ public class StarKIBot extends AbstractBot {
             workers = getMyUnits();
         }
 
-        if (getGameLoop() / 5 == 1) {
+        if (getGameLoop() % 100 == 1) {
             scout();
         }
 
