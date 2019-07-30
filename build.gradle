@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'de.uni-passau.fim.sommercamp', name: 'SC2', version: '2.0'
+    compile group: 'de.uni-passau.fim.sommercamp', name: 'SC2', version: '2.0.2'
     runtime Os.isFamily(Os.FAMILY_UNIX) ?
             "com.github.boehmseb:ocraft-s2client:b8ae4fc23d" :
             "com.github.fheck:ocraft-s2client:e469bc68b7"
