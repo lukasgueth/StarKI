@@ -4,8 +4,6 @@
     <bytecodeTargetLevel>
       <module name="de.uni-passau.fim.sommercamp.SC2Bots.main" target="11" />
       <module name="de.uni-passau.fim.sommercamp.SC2Bots.test" target="11" />
-      <module name="SC2Bots.main" target="11" />
-      <module name="SC2Bots.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
