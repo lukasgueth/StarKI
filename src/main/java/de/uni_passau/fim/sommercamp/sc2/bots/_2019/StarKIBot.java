@@ -85,7 +85,9 @@ public class StarKIBot extends AbstractBot {
         return soldiers;
     }
 
-    /**/
+    /*
+    * Returns whether an enemy has been seen or not
+    * */
 
     private Boolean foundEnemy() {
         return getEnemyUnits().size() > 0 ? true : false;
@@ -95,6 +97,26 @@ public class StarKIBot extends AbstractBot {
      * Scout methods
      */
 
+    /*
+    *   When a Unit`s HP drops below 50%, the unit asks a medic for its position and move towards it
+    * */
+
+    private void checkHP(){
+        for(Unit unit : getMyUnits()){
+            if(unit.isAliveAndVisible() && unit.getHealth()/unit.getMaxHealth() <= 0.50)
+            {
+                if(getMyMedics().size() > 0)
+                {
+                 Vec2 position = getMyMedics().get(0).getPosition();
+                 unit.move(position);
+                }
+            }
+        }
+    }
+
+/*
+*   Picks one unit to go scouting
+* */
     private void pickScout() {
         // Check if at least one bigTank is alive and pick it as a scout
         // Else if pick a normal tank
@@ -108,6 +130,20 @@ public class StarKIBot extends AbstractBot {
         }
     }
 
+    /*
+    *   Generates Map-Diagonale
+    * */
+    private Vec2 diagonale(Unit unit)
+    {
+        Vec2 diagonale;
+        //diagonale = Vec2.dotProduct(unit.getPosition(),Vec2.of(getMapSize().getX(),0));
+        diagonale = unit.getPosition();
+        return diagonale;
+    }
+
+    /*
+    *   Scout moving around
+    * */
     private void scout() {
         pickScout();
 
@@ -201,6 +237,7 @@ public class StarKIBot extends AbstractBot {
                 }
             }
         }
+        checkHP();
 
         Boolean egal = scoutNearTeam();
     }
