@@ -30,7 +30,18 @@ public class git pull github masterStarKIBot extends AbstractBot {
     }
 
     private void test() {
-        
+
+    }
+
+    private List<Unit> getEnemyMedics() {
+        List<Unit> medics = new ArrayList<>();
+        for (Unit medic: getEnemyUnits()) {
+            if (medic.canHeal() && medic.isAliveAndVisible()) {
+                medics.add(medic);
+            }
+        }
+
+        return medics;
     }
 
     private Unit pickScout() {
