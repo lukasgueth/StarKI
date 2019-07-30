@@ -87,6 +87,19 @@ public class StarKIBot extends AbstractBot {
         return soldiers;
     }
 
+    private void checkHP(){
+        for(Unit unit : getMyUnits()){
+            if(unit.isAliveAndVisible() && unit.getHealth()/unit.getMaxHealth() <= 0.50)
+            {
+                if(getMyMedics().size() > 0)
+                {
+                 Vec2 position = getMyMedics().get(0).getPosition();
+                 unit.move(position);
+                }
+            }
+        }
+    }
+
 
     private void pickScout() {
         myScout = workers.get(0);
@@ -116,6 +129,7 @@ public class StarKIBot extends AbstractBot {
         if (getGameLoop() / 20 == 1) {
             scout();
         }
+        checkHP();
 
     }
 }
