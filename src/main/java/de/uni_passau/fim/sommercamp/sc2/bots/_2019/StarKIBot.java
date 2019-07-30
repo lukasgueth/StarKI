@@ -82,9 +82,4 @@ public class StarKIBot extends AbstractBot {
 
          */
     }
-
-    public void scouting()
-    {
-
-    }
 }
