@@ -1,7 +1,10 @@
 package de.uni_passau.fim.sommercamp.sc2.bots._2019;
 
+import SC2APIProtocol.Common;
+import com.github.ocraft.s2client.protocol.spatial.Point2d;
 import de.uni_passau.fim.sommercamp.sc2.bots.AbstractBot;
 import de.uni_passau.fim.sommercamp.sc2.bots.Unit;
+import de.uni_passau.fim.sommercamp.sc2.bots.util.Vec2;
 
 /**
  * Empty bot for the Sommercamp SC2 interface.
@@ -26,9 +29,9 @@ public class EmptyBot extends AbstractBot {
     protected void onStep() {
         printDebugString(name + " is doing nothing yet, program something!");
 
-        /*
+
         if (worker == null || !worker.isAliveAndVisible()) {
-            worker = getMyUnits().get(0);
+            worker = getMyUnits().get(1);
         }
 
         for (Unit unit: getEnemyUnits()) {
@@ -37,8 +40,8 @@ public class EmptyBot extends AbstractBot {
         }
 
         if (worker.getOrders().isEmpty()) {
-            worker.move(getRandomPointOnMap());
+            worker.move(ran);
         }
-        //*/
+
     }
 }
