@@ -132,11 +132,11 @@ public class StarKIBot extends AbstractBot {
     /*
     *   Generates Map-Diagonale
     * */
-    private Vec2 diagonale(Unit unit)
+    private Vec2 diagonale()
     {
         Vec2 diagonale;
-        //diagonale = Vec2.dotProduct(unit.getPosition(),Vec2.of(getMapSize().getX(),0));
-        diagonale = unit.getPosition();
+        diagonale = getRandomPointOnMap();
+        //diagonale = getMapSize().getB().normal();
         return diagonale;
     }
 
@@ -146,7 +146,7 @@ public class StarKIBot extends AbstractBot {
     private void scout() {
         pickScout();
 
-        myScout.move(getRandomPointOnMap());
+        myScout.move(diagonale());
         scouting = true;
     }
 
