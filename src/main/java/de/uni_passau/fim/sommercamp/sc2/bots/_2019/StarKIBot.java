@@ -258,6 +258,7 @@ public class StarKIBot extends AbstractBot {
 
             scoutNextToTeam = true;
 
+            unitsWaitedForMajorUnitsToMove = new ArrayList();
             unitsWaitedForMajorUnitsToMove.add(0, 0);
             unitsWaitedForMajorUnitsToMove.add(1, 0);
         }
