@@ -133,8 +133,7 @@ public class StarKIBot extends AbstractBot {
     /*
     *   Generates Map-Diagonale
     * */
-    private Vec2 diagonale(Unit unit)
-    {
+    private Vec2 diagonale(Unit unit) {
         Vec2 diagonale;
         //diagonale = Vec2.dotProduct(unit.getPosition(),Vec2.of(getMapSize().getX(),0));
         diagonale = unit.getPosition();
@@ -198,7 +197,31 @@ public class StarKIBot extends AbstractBot {
      * Team methods
      */
 
-    private void moveTeam() {
+    private void moveTeam(String mode) {
+        switch (mode) {
+            case "towardsEnemy":
+                // Check if BigTanks are already moving towards enemy
+                if (unitsWaitedForMajorUnitsToMove.get(3) == 0) {
+                    for (Unit bigTank: getMyBigTanks()) {
+                        bigTank
+                    }
+                }
+                break;
+            case "backwards":
+                if (!healerHealing()) {
+                    
+                }
+                break;
+        }
+    }
+
+    /* */
+
+    /**
+     * Healer methods
+     */
+
+    private boolean healerHealing() {
 
     }
 
@@ -217,6 +240,10 @@ public class StarKIBot extends AbstractBot {
             workers = getMyUnits();
 
             scoutNextToTeam = true;
+
+            for (int i=0; i < 4; i++) {
+                unitsWaitedForMajorUnitsToMove.add(i, 0);
+            }
         }
 
         if (!foundEnemy() && scoutNextToTeam == true) {
