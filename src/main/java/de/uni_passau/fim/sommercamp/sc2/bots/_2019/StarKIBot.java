@@ -29,6 +29,10 @@ public class git pull github masterStarKIBot extends AbstractBot {
         return false;
     }
 
+    private void test() {
+        
+    }
+
     private Unit pickScout() {
         return workers.get(0);
     }
