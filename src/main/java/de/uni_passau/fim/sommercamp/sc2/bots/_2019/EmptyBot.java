@@ -2,6 +2,10 @@ package de.uni_passau.fim.sommercamp.sc2.bots._2019;
 
 import de.uni_passau.fim.sommercamp.sc2.bots.AbstractBot;
 import de.uni_passau.fim.sommercamp.sc2.bots.Unit;
+import de.uni_passau.fim.sommercamp.sc2.bots.util.Vec2;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Empty bot for the Sommercamp SC2 interface.
@@ -9,13 +13,34 @@ import de.uni_passau.fim.sommercamp.sc2.bots.Unit;
 public class EmptyBot extends AbstractBot {
 
     String name;
-    Unit worker;
+    List<Unit> workers;
 
     /**
      * This constructor is called by the framework. Extend it with all necessary setup, other constructors won't work.
      */
-    public EmptyBot() {
-        name = "Empty Bot";
+    public EmptyBot() { name = "Empty Bot"; }
+
+    private void attack(Unit myunit, Unit enemy) {
+
+    }
+
+    private Boolean foundEnemy() {
+        // return getEnemyUnits().size() > 0 ? true : false;
+        return false;
+    }
+
+    private Unit pickScout() {
+        return workers.get(0);
+    }
+
+    private void scout() {
+        Unit myScout = pickScout();
+
+        if (!foundEnemy()) {
+            if (getGameLoop() / 100 == 1) {
+                myScout.move(getRandomPointOnMap());
+            }
+        }
     }
 
     /**
@@ -24,21 +49,33 @@ public class EmptyBot extends AbstractBot {
      */
     @Override
     protected void onStep() {
-        printDebugString(name + " is doing nothing yet, program something!");
 
-        /*
-        if (worker == null || !worker.isAliveAndVisible()) {
-            worker = getMyUnits().get(0);
+        // Get list of units and store list in "workers"
+        // Only in the first GameLoop
+        if (getGameLoop() == 1) {
+            workers = getMyUnits();
         }
 
-        for (Unit unit: getEnemyUnits()) {
-            worker.attack(unit);
-            break;
+        for (int i=0; i < workers.size(); i++) {
+
+            if (workers.get(i) == null || workers.get(i).isAliveAndVisible()) {
+
+                /* for (Unit unit: getEnemyUnits()) {
+                    workers.get(i).queueAttack(unit);
+                    printDebugString("Worker"  + Integer.toString(i) + " attackiert!");
+                }
+                 */
+
+                if (workers.get(i).getOrders().isEmpty()) {
+                    scout();
+                }
+            }
         }
 
-        if (worker.getOrders().isEmpty()) {
-            worker.move(getRandomPointOnMap());
+        /* if (workers.get(i).getOrders().isEmpty()) {
+            workers.get(i).move(getRandomPointOnMap());
         }
-        //*/
+
+         */
     }
 }
