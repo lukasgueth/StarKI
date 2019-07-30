@@ -15,6 +15,8 @@ public class StarKIBot extends AbstractBot {
 
     String name;
     List<Unit> workers;
+    List<Integer> enemyLocation;
+    Unit myScout;
 
     /**
      * This constructor is called by the framework. Extend it with all necessary setup, other constructors won't work.
@@ -28,10 +30,6 @@ public class StarKIBot extends AbstractBot {
     private Boolean foundEnemy() {
         // return getEnemyUnits().size() > 0 ? true : false;
         return false;
-    }
-
-    private void test() {
-
     }
 
     private List<Unit> getEnemyMedics() {
@@ -90,17 +88,15 @@ public class StarKIBot extends AbstractBot {
     }
 
 
-    private Unit pickScout() {
-        return workers.get(0);
+    private void pickScout() {
+        myScout = workers.get(0);
     }
 
     private void scout() {
-        Unit myScout = pickScout();
+        pickScout();
 
         if (!foundEnemy()) {
-            if (getGameLoop() / 100 == 1) {
-                myScout.move(getRandomPointOnMap());
-            }
+            myScout.move(getRandomPointOnMap());
         }
     }
 
@@ -117,26 +113,9 @@ public class StarKIBot extends AbstractBot {
             workers = getMyUnits();
         }
 
-        for (int i=0; i < workers.size(); i++) {
-
-            if (workers.get(i) == null || workers.get(i).isAliveAndVisible()) {
-
-                /* for (Unit unit: getEnemyUnits()) {
-                    workers.get(i).queueAttack(unit);
-                    printDebugString("Worker"  + Integer.toString(i) + " attackiert!");
-                }
-                 */
-
-                if (workers.get(i).getOrders().isEmpty()) {
-                    scout();
-                }
-            }
+        if (getGameLoop() / 20 == 1) {
+            scout();
         }
 
-        /* if (workers.get(i).getOrders().isEmpty()) {
-            workers.get(i).move(getRandomPointOnMap());
-        }
-
-         */
     }
 }
