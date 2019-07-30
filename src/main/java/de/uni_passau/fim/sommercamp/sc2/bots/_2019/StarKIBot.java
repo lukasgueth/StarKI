@@ -19,6 +19,7 @@ public class StarKIBot extends AbstractBot {
     Unit myScout;
     Boolean scouting;
     Boolean scoutNextToTeam;
+    List<Integer> unitsWaitedForMajorUnitsToMove;
 
     /**
      * This constructor is called by the framework. Extend it with all necessary setup, other constructors won't work.
@@ -153,6 +154,16 @@ public class StarKIBot extends AbstractBot {
         }
 
         return nearTeam;
+    }
+
+    /* */
+
+    /**
+     * Team methods
+     */
+
+    private void moveTeam() {
+
     }
 
     /* */
