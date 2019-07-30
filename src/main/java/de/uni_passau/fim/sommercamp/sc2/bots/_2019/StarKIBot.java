@@ -10,7 +10,7 @@ package de.uni_passau.fim.sommercamp.sc2.bots._2019;
 /**
  * Empty bot for the Sommercamp SC2 interface.
  */
-public class StarKIBot extends AbstractBot {
+public class git pull github masterStarKIBot extends AbstractBot {
 
     String name;
     List<Unit> workers;
