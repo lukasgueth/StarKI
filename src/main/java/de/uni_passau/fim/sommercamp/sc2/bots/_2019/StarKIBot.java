@@ -10,7 +10,7 @@ package de.uni_passau.fim.sommercamp.sc2.bots._2019;
 /**
  * Empty bot for the Sommercamp SC2 interface.
  */
-public class git pull github masterStarKIBot extends AbstractBot {
+public class StarKIBot extends AbstractBot {
 
     String name;
     List<Unit> workers;
@@ -52,9 +52,11 @@ public class git pull github masterStarKIBot extends AbstractBot {
 
     private void scout() {
         if (!foundEnemy()) {
-            if (getGameLoop() / 100 == 1) {
-                myScout.move(getRandomPointOnMap());
-            }
+            myScout.move(getRandomPointOnMap());
+        }
+        else if (foundEnemy()) {
+            Vec2 vecStartUnit = myScout.getPosition();
+            myScout.move(vecStartUnit);
         }
     }
 
@@ -70,6 +72,7 @@ public class git pull github masterStarKIBot extends AbstractBot {
         if (getGameLoop() == 1) {
             workers = getMyUnits();
         }
-
+        pickScout();
+        scout();
     }
 }
