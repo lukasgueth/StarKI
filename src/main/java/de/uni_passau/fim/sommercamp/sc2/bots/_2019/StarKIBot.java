@@ -27,12 +27,8 @@ public class StarKIBot extends AbstractBot {
     }
 
     private Boolean foundEnemy() {
-        return getEnemyUnits().size() > 0 ? true : false;
-
-    }
-
-    private void test() {
-
+        // return getEnemyUnits().size() > 0 ? true : false;
+        return false;
     }
 
     private List<Unit> getEnemyMedics() {
@@ -51,10 +47,10 @@ public class StarKIBot extends AbstractBot {
     }
 
     private void scout() {
+        pickScout();
+
         if (!foundEnemy()) {
-            if (getGameLoop() / 100 == 1) {
-                myScout.move(getRandomPointOnMap());
-            }
+            myScout.move(getRandomPointOnMap());
         }
     }
 
@@ -69,6 +65,10 @@ public class StarKIBot extends AbstractBot {
         // Only in the first GameLoop
         if (getGameLoop() == 1) {
             workers = getMyUnits();
+        }
+
+        if (getGameLoop() / 20 == 1) {
+            scout();
         }
 
     }
