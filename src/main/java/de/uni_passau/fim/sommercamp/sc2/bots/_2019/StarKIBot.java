@@ -201,15 +201,32 @@ public class StarKIBot extends AbstractBot {
         switch (mode) {
             case "towardsEnemy":
                 // Check if BigTanks are already moving towards enemy
-                if (unitsWaitedForMajorUnitsToMove.get(3) == 0) {
+                if (unitsWaitedForMajorUnitsToMove.get(1) < 3) {
                     for (Unit bigTank: getMyBigTanks()) {
-                        bigTank
+                        bigTank.move(enemyLocation);
+                    }
+
+                    unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
+
+                } else if (unitsWaitedForMajorUnitsToMove.get(0) < 2) {
+                    for (Unit Tank: getMyTanks()) {
+                        Tank.move(enemyLocation);
+                    }
+
+                    unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
+                } else {
+                    for (Unit soldier: getMySoldiers()) {
+                        soldier.move(enemyLocation);
+                    }
+
+                    for (Unit medic: getMyMedics()) {
+                        medic.move(enemyLocation);
                     }
                 }
                 break;
             case "backwards":
                 if (!healerHealing()) {
-                    
+
                 }
                 break;
         }
@@ -222,7 +239,7 @@ public class StarKIBot extends AbstractBot {
      */
 
     private boolean healerHealing() {
-
+        return true;
     }
 
     /* */
@@ -241,9 +258,8 @@ public class StarKIBot extends AbstractBot {
 
             scoutNextToTeam = true;
 
-            for (int i=0; i < 4; i++) {
-                unitsWaitedForMajorUnitsToMove.add(i, 0);
-            }
+            unitsWaitedForMajorUnitsToMove.add(0, 0);
+            unitsWaitedForMajorUnitsToMove.add(1, 0);
         }
 
         if (!foundEnemy() && scoutNextToTeam == true) {
@@ -261,6 +277,8 @@ public class StarKIBot extends AbstractBot {
 
                 if (scoutNearTeam()) {
                     printDebugString("Scout is back Home!");
+
+                    moveTeam("towardsEnemy");
                 }
             }
         }
