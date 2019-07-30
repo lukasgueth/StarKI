@@ -23,14 +23,9 @@ public class StarKIBot extends AbstractBot {
      */
     public StarKIBot() { name = "Empty Bot"; }
 
-    private void attack(Unit myunit, Unit enemy) {
-
-    }
-
-    private Boolean foundEnemy() {
-        // return getEnemyUnits().size() > 0 ? true : false;
-        return false;
-    }
+    /**
+     * Get Unit methods
+    */
 
     private List<Unit> getEnemyMedics() {
         List<Unit> medics = new ArrayList<>();
@@ -87,6 +82,18 @@ public class StarKIBot extends AbstractBot {
         return soldiers;
     }
 
+    /*
+    * Returns whether an enemy has been seen or not
+    * */
+
+    private Boolean foundEnemy() {
+        return getEnemyUnits().size() > 0 ? true : false;
+    }
+
+    /*
+    *   When a Unit`s HP drops below 50%, the unit asks a medic for its position and move towards it
+    * */
+
     private void checkHP(){
         for(Unit unit : getMyUnits()){
             if(unit.isAliveAndVisible() && unit.getHealth()/unit.getMaxHealth() <= 0.50)
@@ -100,11 +107,36 @@ public class StarKIBot extends AbstractBot {
         }
     }
 
-
+/*
+*   Picks one unit to go scouting
+* */
     private void pickScout() {
-        myScout = workers.get(0);
+        // Check if at least one bigTank is alive and pick it as a scout
+        // Else if pick a normal tank
+        // Else if pick a marine
+        if (getMyBigTanks().size() > 0) {
+            myScout = getMyBigTanks().get(0);
+        } else if (getMyTanks().size() > 0) {
+            myScout = getMyTanks().get(0);
+        } else {
+            myScout = getMySoldiers().get(0);
+        }
     }
 
+    /*
+    *   Generates Map-Diagonale
+    * */
+    private Vec2 diagonale(Unit unit)
+    {
+        Vec2 diagonale;
+        //diagonale = Vec2.dotProduct(unit.getPosition(),Vec2.of(getMapSize().getX(),0));
+        diagonale = unit.getPosition();
+        return diagonale;
+    }
+
+    /*
+    *   Scout moving around
+    * */
     private void scout() {
         pickScout();
 
@@ -126,7 +158,7 @@ public class StarKIBot extends AbstractBot {
             workers = getMyUnits();
         }
 
-        if (getGameLoop() / 20 == 1) {
+        if (getGameLoop() % 100 == 1) {
             scout();
         }
         checkHP();
