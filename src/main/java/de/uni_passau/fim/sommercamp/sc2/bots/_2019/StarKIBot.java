@@ -197,6 +197,9 @@ public class StarKIBot extends AbstractBot {
     /**
      * Team methods
      */
+    private void moveTeam(String mode) {
+        moveTeam(mode, Vec2.of(0,0));
+    }
 
     private void moveTeam(String mode, Vec2 target) {
         switch (mode) {
