@@ -146,12 +146,16 @@ public class StarKIBot extends AbstractBot {
         y = diagonale.getY();
         diagonale = getMapSize().getB().normal();
         diagonale = diagonale.plus(getMapSize().getB().scaled(0.1f));
-        diagonale = diagonale.rotated(90,'d');
-        //diagonale = diagonale.scaled(1);
 
-       if(isTop()) {
-            //diagonale = diagonale.negated();
+       if(!isTop()) {
+           diagonale = diagonale.rotated(25,'d');
+           diagonale = diagonale.scaled(length/3);
         }
+       else{
+
+           diagonale = diagonale.rotated(-55,'d');
+           diagonale = diagonale.scaled(length/3f);
+       }
 
         printDebugString("X: "+Float.toString(diagonale.getX()));
         printDebugString("Y: "+Float.toString(diagonale.getY()));
