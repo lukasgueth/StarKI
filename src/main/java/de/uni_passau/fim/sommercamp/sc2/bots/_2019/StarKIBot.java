@@ -410,9 +410,9 @@ public class StarKIBot extends AbstractBot {
      */
 
     private void intellegentAttack() {
-        boolean medicAlive = true;
-        boolean soldierAlive = true;
-        boolean tankAlive = true;
+        boolean medicAlive;
+        boolean soldierAlive;
+        boolean tankAlive;
 
         List<Unit> myAttackingUnits = new ArrayList<>();
         printDebugString("Created List myAttackingUnits.");
@@ -424,7 +424,7 @@ public class StarKIBot extends AbstractBot {
 
         printDebugString("intellegentAttack wurde gecallt!");
 
-        if (tankAlive) {
+        if (getEnemyTanks().size() > 0) {
             printDebugString("Tanks alive: " + Integer.toString(getEnemyTanks().size()));
             if (getEnemyTanks().size() > 0) {
                 for (Unit myAttacker : myAttackingUnits) {
@@ -434,7 +434,7 @@ public class StarKIBot extends AbstractBot {
                 tankAlive = false;
             }
         } else {
-            if (soldierAlive) {
+            if (getEnemySoldiers().size() >0) {
                 printDebugString("There are soldier's alive");
                 // If normal tanks are not helping to kill the medics they help killing the soldiers
                 List<Unit> availableTanks = new ArrayList<>();
@@ -507,8 +507,8 @@ public class StarKIBot extends AbstractBot {
                 }
             }
 
-            if (!soldierAlive) {
-                if (medicAlive) {
+            if (getEnemySoldiers().size()==0) {
+                if (getEnemyMedics().size() >0) {
                     if (getEnemyMedics().size() > 0) {
                         for (Unit attackingUnit : myAttackingUnits) {
                             attackingUnit.queueAttack(getEnemyMedics().get(0));
