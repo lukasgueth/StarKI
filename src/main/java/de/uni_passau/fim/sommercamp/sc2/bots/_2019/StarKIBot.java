@@ -233,34 +233,40 @@ public class StarKIBot extends AbstractBot {
                 break;
             case "backwards":
                 if (!healerHealing()) {
-                    Vec2 OurPositionBeforeWithdrawal = getMyMedics().get(0).getPosition();
-                    Vec2 EnemyPositionBeforeWithdrawal = getEnemyMedics().get(0).getPosition();
-                    Vec2 DirectionOfRetreat = OurPositionBeforeWithdrawal.plus(EnemyPositionBeforeWithdrawal);
+                    if(getEnemyMedics().size() != 0) {
 
-                    if (unitsWaitedForMajorUnitsToMove.get(2) < 3) {
-                        for (Unit bigTank: getMyBigTanks()) {
-                            bigTank.move(DirectionOfRetreat);
+                        Vec2 OurPositionBeforeWithdrawal = getMyMedics().get(0).getPosition();
+                        Vec2 EnemyPositionBeforeWithdrawal = getEnemyMedics().get(0).getPosition();
+                        Vec2 DirectionOfRetreat = OurPositionBeforeWithdrawal.plus(EnemyPositionBeforeWithdrawal);
+
+                        if (unitsWaitedForMajorUnitsToMove.get(2) < 3) {
+                            for (Unit bigTank : getMyBigTanks()) {
+                                bigTank.move(DirectionOfRetreat);
+                            }
+
+                            unitsWaitedForMajorUnitsToMove.add(2, unitsWaitedForMajorUnitsToMove.get(2) + 1);
+
+                        } else if (unitsWaitedForMajorUnitsToMove.get(2) > 2 && unitsWaitedForMajorUnitsToMove.get(1) < 3) {
+                            for (Unit Tank : getMyTanks()) {
+                                Tank.move(DirectionOfRetreat);
+                            }
+                            printDebugString("Tanks are moving.");
+                            unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
+
+                        } else if (unitsWaitedForMajorUnitsToMove.get(1) > 2 && unitsWaitedForMajorUnitsToMove.get(0) < 2) {
+                            for (Unit soldier : getMySoldiers()) {
+                                soldier.move(DirectionOfRetreat);
+                            }
+
+                            for (Unit medic : getMyMedics()) {
+                                medic.move(DirectionOfRetreat);
+                            }
+
+                            unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
                         }
-
-                        unitsWaitedForMajorUnitsToMove.add(2, unitsWaitedForMajorUnitsToMove.get(2) + 1);
-
-                    } else if (unitsWaitedForMajorUnitsToMove.get(2) > 2 && unitsWaitedForMajorUnitsToMove.get(1) < 3) {
-                        for (Unit Tank: getMyTanks()) {
-                            Tank.move(DirectionOfRetreat);
-                        }
-                        printDebugString("Tanks are moving.");
-                        unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
-
-                    } else if (unitsWaitedForMajorUnitsToMove.get(1) > 2 && unitsWaitedForMajorUnitsToMove.get(0) < 2) {
-                        for (Unit soldier: getMySoldiers()) {
-                            soldier.move(DirectionOfRetreat);
-                        }
-
-                        for (Unit medic: getMyMedics()) {
-                            medic.move(DirectionOfRetreat);
-                        }
-
-                        unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
+                    }
+                    else {
+                        printDebugString("No enemy medics spotted yet / No enemy medics existent");
                     }
 
                     printDebugString("Backwards !healerHealing Units should withdraw/retreat");
