@@ -133,10 +133,11 @@ public class StarKIBot extends AbstractBot {
     /*
     *   Generates Map-Diagonale
     * */
-    private Vec2 diagonale(Unit unit) {
+    private Vec2 diagonale()
+    {
         Vec2 diagonale;
-        //diagonale = Vec2.dotProduct(unit.getPosition(),Vec2.of(getMapSize().getX(),0));
-        diagonale = unit.getPosition();
+        diagonale = getRandomPointOnMap();
+        //diagonale = getMapSize().getB().normal();
         return diagonale;
     }
 
@@ -146,7 +147,7 @@ public class StarKIBot extends AbstractBot {
     private void scout() {
         pickScout();
 
-        myScout.move(getRandomPointOnMap());
+        myScout.move(diagonale());
         scouting = true;
     }
 
@@ -208,13 +209,13 @@ public class StarKIBot extends AbstractBot {
 
                     unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
 
-                } else if (unitsWaitedForMajorUnitsToMove.get(0) < 2) {
+                } else if (unitsWaitedForMajorUnitsToMove.get(1) >= 3) {
                     for (Unit Tank: getMyTanks()) {
                         Tank.move(enemyLocation);
                     }
 
                     unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
-                } else {
+                } else if (unitsWaitedForMajorUnitsToMove.get(0) > 2) {
                     for (Unit soldier: getMySoldiers()) {
                         soldier.move(enemyLocation);
                     }
@@ -258,6 +259,7 @@ public class StarKIBot extends AbstractBot {
 
             scoutNextToTeam = true;
 
+            unitsWaitedForMajorUnitsToMove = new ArrayList();
             unitsWaitedForMajorUnitsToMove.add(0, 0);
             unitsWaitedForMajorUnitsToMove.add(1, 0);
         }
