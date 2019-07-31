@@ -227,7 +227,7 @@ public class StarKIBot extends AbstractBot {
                 break;
             case "backwards":
                 if (!healerHealing()) {
-
+                    
                 }
                 break;
         }
@@ -240,7 +240,9 @@ public class StarKIBot extends AbstractBot {
      */
 
     private boolean healerHealing() {
-        return true;
+        for (Unit medic: getMyMedics()) {
+
+        }
     }
 
     /* */
