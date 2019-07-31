@@ -7,6 +7,7 @@ package de.uni_passau.fim.sommercamp.sc2.bots._2019;
 
         import java.util.ArrayList;
         import java.util.List;
+        import java.util.PrimitiveIterator;
 
 /**
  * Empty bot for the Sommercamp SC2 interface.
@@ -137,17 +138,57 @@ public class StarKIBot extends AbstractBot {
     private Vec2 diagonale()
     {
         Vec2 diagonale;
-        diagonale = getRandomPointOnMap();
-        //diagonale = getMapSize().getB().normal();
+        float x,y, length;
+        float scale;
+        diagonale = getMapSize().getB().scaled(0.5f);
+        length = diagonale.getLength();
+        x = diagonale.getX();
+        y = diagonale.getY();
+        diagonale = getMapSize().getB().normal();
+        diagonale = diagonale.plus(getMapSize().getB().scaled(0.1f));
+
+       if(!isTop()) {
+           diagonale = diagonale.rotated(25,'d');
+           diagonale = diagonale.scaled(length/3);
+        }
+       else{
+
+           diagonale = diagonale.rotated(-55,'d');
+           diagonale = diagonale.scaled(length/3f);
+       }
+
+        printDebugString("X: "+Float.toString(diagonale.getX()));
+        printDebugString("Y: "+Float.toString(diagonale.getY()));
+        printDebugString("Vector has been found");
         return diagonale;
     }
 
+    private boolean isTop(){
+        boolean result;
+        Unit unit = getMyUnits().get(0);
+        if(unit.getPosition().getY() <10){
+            result = false;
+            printDebugString("I am bottom!");
+        }
+        else
+        {
+            result = true;
+            printDebugString("I am top!");
+        }
+        return result;
+    }
+
+    /*
+    *   Scout moving around
+    * */
 
     // Scout moving around
     private void scout() {
-        pickScout();
 
+        printDebugString("Is running");
+        pickScout();
         myScout.move(diagonale());
+        //myScout.move(getRandomPointOnMap());
         scouting = true;
     }
 
@@ -333,9 +374,10 @@ public class StarKIBot extends AbstractBot {
 
         // Get list of units and store list in "workers"
         // Only in the first GameLoop
+        printDebugString("onStep triggered");
         if (getGameLoop() == 1) {
             workers = getMyUnits();
-
+            printDebugString("Gameloop 1 found!");
             scoutNextToTeam = true;
 
             unitsWaitedForMajorUnitsToMove = new ArrayList();
@@ -345,6 +387,7 @@ public class StarKIBot extends AbstractBot {
         }
 
         if (!foundEnemy() && scoutNextToTeam == true) {
+            printDebugString("No enemy found!");
             if (getGameLoop() % 100 == 1) {
                 scout();
             }
