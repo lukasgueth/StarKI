@@ -419,9 +419,6 @@ public class StarKIBot extends AbstractBot {
             }
         }
 
-        List<Unit> mySoldiers = getMySoldiers();
-        List<Unit> myTanks = getMyTanks();
-
         printDebugString("intellegentAttack wurde gecallt!");
 
         if (soldierAlive) {
@@ -453,16 +450,16 @@ public class StarKIBot extends AbstractBot {
                 bigTanksAvailable = false;
             }
 
-            if (mySoldiers.size() + availableTanks.size() > 2) {
+            if (getMySoldiers().size() + availableTanks.size() > 2) {
                 if (getEnemySoldiers().size() > 1) {
-                    int firstAttackersTeam = mySoldiers.size() / 2;
+                    int firstAttackersTeam = getMySoldiers().size() / 2;
                     printDebugString("Team attacks enemySoldiers.");
                     printDebugString("First Team: " + Integer.toString(firstAttackersTeam));
                     for (int i = 0; i < firstAttackersTeam; i++) {
-                        mySoldiers.get(i).queueAttack(getEnemySoldiers().get(0));
+                        getMySoldiers().get(i).queueAttack(getEnemySoldiers().get(0));
                     }
                     printDebugString("Second Team: " + Integer.toString(myAttackingUnits.size() - firstAttackersTeam));
-                    for (int i = firstAttackersTeam + 1; i < mySoldiers.size(); i++) {
+                    for (int i = firstAttackersTeam + 1; i < getMySoldiers().size(); i++) {
                         myAttackingUnits.get(i).queueAttack(getEnemySoldiers().get(1));
                     }
 
@@ -489,7 +486,7 @@ public class StarKIBot extends AbstractBot {
                     soldierAlive = false;
                 }
             } else {
-                if (mySoldiers.size() > 0) {
+                if (getMySoldiers().size() > 0) {
                     for (Unit soldier: getMySoldiers()) {
                         soldier.queueAttack(getEnemySoldiers().get(0));
                     }
