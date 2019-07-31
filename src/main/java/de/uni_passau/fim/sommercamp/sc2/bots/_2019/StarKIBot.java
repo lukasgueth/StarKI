@@ -272,42 +272,50 @@ public class StarKIBot extends AbstractBot {
     private void intellegentAttack() {
         boolean medicAlive = true;
         boolean soldierAlive = true;
-
-        if (getMyBigTanks().size() > 2) {
-            if (getEnemyMedics().get(0).isAliveAndVisible()) {
-                for (Unit bigTank: getMyBigTanks()) {
+        printDebugString("intellegentAttack wurde gecallt!");
+        if (getEnemyMedics().size() > 0) {
+            if (getMyBigTanks().size() > 1) {
+                printDebugString("Tanks sind vorhanden!");
+                for (Unit bigTank : getMyBigTanks()) {
                     printDebugString("Bigtanks attack medics.");
                     bigTank.attack(getEnemyMedics().get(0));
                 }
-            } else {
-                medicAlive = false;
             }
+        } else {
+            printDebugString("All hostile medics are dead!");
+            medicAlive = false;
         }
 
         if (!medicAlive) {
             List<Unit> myAttackingUnits = new ArrayList<>();
-
+            printDebugString("Created List myAttackingUnits.");
             for (Unit myUnit: getMyUnits()) {
-                if (myUnit.isAliveAndVisible() && myUnit.canAttack()) {
+                if (myUnit.canAttack()) {
                     myAttackingUnits.add(myUnit);
                 }
             }
 
             if (soldierAlive) {
+                printDebugString("There are soldier's alive");
                 if (myAttackingUnits.size() >= 4) {
                     if (getEnemySoldiers().size() > 1) {
                         int firstAttackersTeam = myAttackingUnits.size() / 2;
                         printDebugString("Team attacks enemySoldiers.");
+                        printDebugString("First Team: " + Integer.toString(firstAttackersTeam));
                         for (int i=0; i < firstAttackersTeam; i++) {
                             myAttackingUnits.get(i).queueAttack(getEnemySoldiers().get(0));
                         }
+                        printDebugString("Second Team: " + Integer.toString(myAttackingUnits.size() - firstAttackersTeam));
                         for (int i=firstAttackersTeam + 1; i < myAttackingUnits.size(); i++) {
                             myAttackingUnits.get(i).queueAttack(getEnemySoldiers().get(1));
                         }
-                    } else {
+                    } else if (getEnemySoldiers().size() == 1) {
                         for (Unit attackingUnit: myAttackingUnits) {
+                            printDebugString("There should be only 1 hostile soldier left!");
                             attackingUnit.queueAttack(getEnemySoldiers().get(0));
                         }
+                    } else {
+                        soldierAlive = false;
                     }
                 }
             }
