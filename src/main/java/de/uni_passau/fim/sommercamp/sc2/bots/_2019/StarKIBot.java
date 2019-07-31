@@ -294,7 +294,7 @@ public class StarKIBot extends AbstractBot {
                 break;
             case "backwards":
                 if (!healerHealing()) {
-                    if(getEnemyMedics().size() != 0) {
+                    if(getEnemyMedics().size() != 0 && getMyMedics().size() != 0) {
 
                         Vec2 OurPositionBeforeWithdrawal = getMyMedics().get(0).getPosition();
                         Vec2 EnemyPositionBeforeWithdrawal = getEnemyMedics().get(0).getPosition();
@@ -325,15 +325,16 @@ public class StarKIBot extends AbstractBot {
 
                             unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
                         }
+                        printDebugString("Backwards !healerHealing, Units should withdraw/retreat!!!!");
                     }
                     else {
-                        printDebugString("No enemy medics spotted yet / No enemy medics existent");
+                        printDebugString("No enemy medics spotted yet / No enemy medics existent / All enemy medics succesfully eliminated");
                     }
 
-                    printDebugString("Backwards !healerHealing Units should withdraw/retreat");
+                    printDebugString("Backwards !healerHealing, Units should withdraw/retreat");
                 }
                 else {
-                    printDebugString("Backwards !healerHealing Units should withdraw/retreat but somehow it's ELSE");
+                    printDebugString("Backwards !healerHealing, Units should withdraw/retreat but somehow it's ELSE");
                 }
                 break;
         }
