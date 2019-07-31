@@ -525,8 +525,8 @@ public class StarKIBot extends AbstractBot {
             }
         }
 
-        boolean sfoi = healerHealing();
-        if (!healerHealing()) {
+         boolean sfoi = healerHealing();
+         if (!healerHealing()) {
             moveTeam("backwards");
         }
 
