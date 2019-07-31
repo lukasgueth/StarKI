@@ -133,18 +133,12 @@ public class StarKIBot extends AbstractBot {
         for(Unit unit : getMyUnits()){
             if(unit.isAliveAndVisible() && unit.getHealth()/unit.getMaxHealth() <= 0.50)
             {
-                if(getMyMedics().size() > 0)
-                {
-                 Vec2 position = getMyMedics().get(0).getPosition();
-                 unit.move(position);
+                //Vec2 position = unit.getPosition();
+                for(Unit medic: getMyMedics()){
+                    medic.queueHeal(unit);
                 }
             }
         }
-    }
-
-    // When a high precentage of units is on weapon cooldown, fall back
-    private void checkWC(){
-
     }
 
     // Picks one unit to go scouting
@@ -159,6 +153,8 @@ public class StarKIBot extends AbstractBot {
         } else {
             if (getMySoldiers().size() > 0) {
                 myScout = getMySoldiers().get(0);
+            } else{
+                myScout = getMyMedics().get(0);
             }
         }
     }
@@ -181,8 +177,8 @@ public class StarKIBot extends AbstractBot {
         }
        else{
 
-           diagonale = diagonale.rotated(-55,'d');
-           diagonale = diagonale.scaled(length/3f);
+           diagonale = diagonale.rotated(-50,'d');
+           diagonale = diagonale.scaled(length/3.5f);
        }
 
         printDebugString("X: "+Float.toString(diagonale.getX()));
@@ -344,14 +340,17 @@ public class StarKIBot extends AbstractBot {
     }
 
     private boolean teamNextToEnemy() {
-        float medicX = getMyMedics().get(0).getPosition().getX();
-        float medicY = getMyMedics().get(0).getPosition().getY();
-        float enemyX = enemyLocation.getX();
-        float enemyY = enemyLocation.getY();
+        if(getMyMedics().size() > 0) {
+            float medicX = getMyMedics().get(0).getPosition().getX();
+            float medicY = getMyMedics().get(0).getPosition().getY();
+            float enemyX = enemyLocation.getX();
+            float enemyY = enemyLocation.getY();
 
-        if (medicX - enemyX > 5 || medicX - enemyX > -5) {
-            if (medicY - enemyY > 5 || medicY - enemyY > -5) {
-                return true;
+
+            if (medicX - enemyX > 5 || medicX - enemyX > -5) {
+                if (medicY - enemyY > 5 || medicY - enemyY > -5) {
+                    return true;
+                }
             }
         }
 
@@ -507,13 +506,10 @@ public class StarKIBot extends AbstractBot {
      */
     @Override
     protected void onStep() {
-
+        pickScout();
         // Get list of units and store list in "workers"
         // Only in the first GameLoop
         printDebugString("onStep triggered");
-
-        pickScout();
-
         if (getGameLoop() == 1) {
             workers = getMyUnits();
             printDebugString("Gameloop 1 found!");
@@ -551,8 +547,7 @@ public class StarKIBot extends AbstractBot {
 
                     moveTeam("towardsEnemy");
                 }
-                printDebugString("Medic is at: " + getMyMedics().get(0).getPosition().getX() + "," + getMyMedics().get(0).getPosition().getY());
-                printDebugString("Enemy is at: " + enemyLocation.getX() + "," + enemyLocation.getY());
+            printDebugString("Enemy is at: " + enemyLocation.getX() + "," + enemyLocation.getY());
 
                 if (teamNextToEnemy()) {
                     printDebugString("Team is next to Enemy!");
@@ -561,7 +556,6 @@ public class StarKIBot extends AbstractBot {
             }
         }
 
-
-        // checkHP();
+        checkHP();
     }
 }
