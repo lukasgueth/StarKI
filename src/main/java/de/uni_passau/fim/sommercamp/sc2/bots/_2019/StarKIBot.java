@@ -198,24 +198,25 @@ public class StarKIBot extends AbstractBot {
      * Team methods
      */
 
-    private void moveTeam(String mode) {
+    private void moveTeam(String mode, Vec2 target) {
         switch (mode) {
             case "towardsEnemy":
                 // Check if BigTanks are already moving towards enemy
-                if (unitsWaitedForMajorUnitsToMove.get(1) < 3) {
+                if (unitsWaitedForMajorUnitsToMove.get(2) < 3) {
                     for (Unit bigTank: getMyBigTanks()) {
                         bigTank.move(enemyLocation);
                     }
 
-                    unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
+                    unitsWaitedForMajorUnitsToMove.add(2, unitsWaitedForMajorUnitsToMove.get(2) + 1);
 
-                } else if (unitsWaitedForMajorUnitsToMove.get(1) >= 3) {
+                } else if (unitsWaitedForMajorUnitsToMove.get(2) > 2 && unitsWaitedForMajorUnitsToMove.get(1) < 3) {
                     for (Unit Tank: getMyTanks()) {
                         Tank.move(enemyLocation);
                     }
+                    printDebugString("Tanks are moving.");
+                    unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
 
-                    unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
-                } else if (unitsWaitedForMajorUnitsToMove.get(0) > 2) {
+                } else if (unitsWaitedForMajorUnitsToMove.get(1) > 2 && unitsWaitedForMajorUnitsToMove.get(0) < 2) {
                     for (Unit soldier: getMySoldiers()) {
                         soldier.move(enemyLocation);
                     }
@@ -223,11 +224,13 @@ public class StarKIBot extends AbstractBot {
                     for (Unit medic: getMyMedics()) {
                         medic.move(enemyLocation);
                     }
+
+                    unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
                 }
                 break;
             case "backwards":
                 if (!healerHealing()) {
-                    
+
                 }
                 break;
         }
@@ -241,6 +244,18 @@ public class StarKIBot extends AbstractBot {
 
     private boolean healerHealing() {
         for (Unit medic: getMyMedics()) {
+
+        }
+    }
+
+    /* */
+
+    /**
+     * Attack methods
+     */
+
+    private void intellegentAttack() {
+        if (getMyBigTanks().size() > 2) {
 
         }
     }
@@ -262,8 +277,9 @@ public class StarKIBot extends AbstractBot {
             scoutNextToTeam = true;
 
             unitsWaitedForMajorUnitsToMove = new ArrayList();
-            unitsWaitedForMajorUnitsToMove.add(0, 0);
-            unitsWaitedForMajorUnitsToMove.add(1, 0);
+            for (int i=0; i < 3; i++) {
+                unitsWaitedForMajorUnitsToMove.add(i, 0);
+            }
         }
 
         if (!foundEnemy() && scoutNextToTeam == true) {
@@ -278,12 +294,12 @@ public class StarKIBot extends AbstractBot {
                 enemyLocation = myScout.getPosition();
 
                 returnScoutToTeam();
+            }
 
-                if (scoutNearTeam()) {
-                    printDebugString("Scout is back Home!");
+            if (scoutNearTeam()) {
+                printDebugString("Scout is back Home!");
 
-                    moveTeam("towardsEnemy");
-                }
+                moveTeam("towardsEnemy");
             }
         }
         checkHP();
