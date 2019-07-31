@@ -7,6 +7,7 @@ package de.uni_passau.fim.sommercamp.sc2.bots._2019;
 
         import java.util.ArrayList;
         import java.util.List;
+        import java.util.PrimitiveIterator;
 
 /**
  * Empty bot for the Sommercamp SC2 interface.
@@ -136,9 +137,46 @@ public class StarKIBot extends AbstractBot {
     private Vec2 diagonale()
     {
         Vec2 diagonale;
-        diagonale = getRandomPointOnMap();
-        //diagonale = getMapSize().getB().normal();
+        float scale;
+
+        scale = 1;
+
+        if(isTop()) {
+            //diagonale = getRandomPointOnMap();
+            diagonale = getMapSize().getB().normal().negated();
+            while (!isPointOnMap(diagonale)) {
+                scale -= 0.01;
+                diagonale.scaled(scale);
+                printDebugString("Vector isnt right!");
+            }
+        }
+        else {
+            //diagonale = getRandomPointOnMap();
+            diagonale = getMapSize().getB().normal().negated();
+            while (!isPointOnMap(diagonale)) {
+                scale -= 0.01;
+                diagonale.scaled(scale);
+                printDebugString("Vector isnt right!");
+            }
+        }
+
+        printDebugString("Vector has been found");
         return diagonale;
+    }
+
+    private boolean isTop(){
+        boolean result;
+        Unit unit = getMyUnits().get(0);
+        if(unit.getPosition().getY() <10){
+            result = true;
+            printDebugString("I am top!");
+        }
+        else
+        {
+            result = false;
+            printDebugString("I am bottom!");
+        }
+        return result;
     }
 
     /*
@@ -146,8 +184,9 @@ public class StarKIBot extends AbstractBot {
     * */
     private void scout() {
         pickScout();
-
+        printDebugString("Is running");
         myScout.move(diagonale());
+        //myScout.move(getRandomPointOnMap());
         scouting = true;
     }
 
