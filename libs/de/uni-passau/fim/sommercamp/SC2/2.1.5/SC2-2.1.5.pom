@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.uni-passau.fim.sommercamp</groupId>
   <artifactId>SC2</artifactId>
-  <version>2.1.2</version>
+  <version>2.1.5</version>
   <dependencies>
     <dependency>
       <groupId>com.github.fheck</groupId>
