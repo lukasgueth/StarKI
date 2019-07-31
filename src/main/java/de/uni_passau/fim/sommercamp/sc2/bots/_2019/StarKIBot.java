@@ -218,7 +218,15 @@ public class StarKIBot extends AbstractBot {
 
         printDebugString("Cleared orders of Scout.");
 
-        myScout.move(getMyMedics().get(0).getPosition());
+        if (getMyMedics().size() > 0) {
+            myScout.move(getMyMedics().get(0).getPosition());
+        } else if (getMySoldiers().size() > 0) {
+            myScout.move(getMySoldiers().get(getMySoldiers().size() - 1).getPosition());
+        } else if (getMyTanks().size() > 0) {
+            myScout.move(getMyTanks().get(getMyTanks().size() - 1).getPosition());
+        } else if (getMyBigTanks().size() > 0) {
+            myScout.move(getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition());
+        }
 
         scoutNextToTeam = false;
     }
@@ -340,17 +348,22 @@ public class StarKIBot extends AbstractBot {
     }
 
     private boolean teamNextToEnemy() {
+        float myUnitX = 0;
+        float myUnitY = 0;
+        float enemyX = enemyLocation.getX();
+        float enemyY = enemyLocation.getY();
+
         if(getMyMedics().size() > 0) {
-            float medicX = getMyMedics().get(0).getPosition().getX();
-            float medicY = getMyMedics().get(0).getPosition().getY();
-            float enemyX = enemyLocation.getX();
-            float enemyY = enemyLocation.getY();
+            myUnitX = getMyMedics().get(0).getPosition().getX();
+            myUnitY = getMyMedics().get(0).getPosition().getY();;
+        } else if (getMySoldiers().size() > 0) {
+            myUnitX = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getX();
+            myUnitY = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getY();
+        }
 
-
-            if (medicX - enemyX > 5 || medicX - enemyX > -5) {
-                if (medicY - enemyY > 5 || medicY - enemyY > -5) {
-                    return true;
-                }
+        if (myUnitX - enemyX > 5 || myUnitX - enemyX > -5) {
+            if (myUnitY - enemyY > 5 || myUnitY - enemyY > -5) {
+                return true;
             }
         }
 
@@ -403,11 +416,11 @@ public class StarKIBot extends AbstractBot {
 
         printDebugString("intellegentAttack wurde gecallt!");
 
-        // if (!medicAlive) {
-            if (soldierAlive) {
-                printDebugString("There are soldier's alive");
-                // If normal tanks are not helping to kill the medics they help killing the soldiers
-                List<Unit> availableTanks = new ArrayList<>();
+        if (soldierAlive) {
+            printDebugString("There are soldier's alive");
+            // If normal tanks are not helping to kill the medics they help killing the soldiers
+            List<Unit> availableTanks = new ArrayList<>();
+            if (getMyTanks().size() > 0) {
                 for (Unit tank : getMyTanks()) {
                     for (int i = 0; i < tank.getOrders().size(); i++) {
                         if (!tank.getOrders().get(i).getTargetedUnitTag().equals(Units.TERRAN_MEDIC)) {
@@ -415,87 +428,95 @@ public class StarKIBot extends AbstractBot {
                         }
                     }
                 }
+            } else {
+                availableTanks = new ArrayList<>();
+            }
 
-                // If bigTanks are not killing medics anymore
-                boolean bigTanksAvailable;
-                if (getMyBigTanks().size() > 0) {
-                    bigTanksAvailable = true;
-                    for (int i = 0; i < getMyBigTanks().get(0).getOrders().size(); i++) {
-                        if (getMyBigTanks().get(0).getOrders().get(i).getTargetedUnitTag().equals(Units.TERRAN_MEDIC)) {
-                            bigTanksAvailable = false;
+            // If bigTanks are not killing medics anymore
+            boolean bigTanksAvailable;
+            if (getMyBigTanks().size() > 0) {
+                bigTanksAvailable = true;
+                for (int i = 0; i < getMyBigTanks().get(0).getOrders().size(); i++) {
+                    if (getMyBigTanks().get(0).getOrders().get(i).getTargetedUnitTag().equals(Units.TERRAN_MEDIC)) {
+                        bigTanksAvailable = false;
+                    }
+                }
+            } else {
+                bigTanksAvailable = false;
+            }
+
+            if (mySoldiers.size() + availableTanks.size() > 2) {
+                if (getEnemySoldiers().size() > 1) {
+                    int firstAttackersTeam = mySoldiers.size() / 2;
+                    printDebugString("Team attacks enemySoldiers.");
+                    printDebugString("First Team: " + Integer.toString(firstAttackersTeam));
+                    for (int i = 0; i < firstAttackersTeam; i++) {
+                        mySoldiers.get(i).queueAttack(getEnemySoldiers().get(0));
+                    }
+                    printDebugString("Second Team: " + Integer.toString(myAttackingUnits.size() - firstAttackersTeam));
+                    for (int i = firstAttackersTeam + 1; i < mySoldiers.size(); i++) {
+                        myAttackingUnits.get(i).queueAttack(getEnemySoldiers().get(1));
+                    }
+
+                    if (availableTanks.size() > 0) {
+                        availableTanks.get(0).queueAttack(getEnemySoldiers().get(0));
+                    } else if (availableTanks.size() > 1) {
+                        availableTanks.get(1).queueAttack(getEnemySoldiers().get(1));
+                        ;
+                    }
+
+                    if (bigTanksAvailable) {
+                        getMyBigTanks().get(0).queueAttack(getEnemySoldiers().get(0));
+
+                        if (getMyBigTanks().size() > 1) {
+                            getMyBigTanks().get(1).queueAttack(getEnemySoldiers().get(1));
                         }
                     }
+                } else if (getEnemySoldiers().size() == 1) {
+                    for (Unit attackingUnit : myAttackingUnits) {
+                        printDebugString("There should be only 1 hostile soldier left!");
+                        attackingUnit.queueAttack(getEnemySoldiers().get(0));
+                    }
                 } else {
-                    bigTanksAvailable = false;
+                    soldierAlive = false;
                 }
-
-                if (mySoldiers.size() + availableTanks.size() > 2) {
-                    if (getEnemySoldiers().size() > 1) {
-                        int firstAttackersTeam = mySoldiers.size() / 2;
-                        printDebugString("Team attacks enemySoldiers.");
-                        printDebugString("First Team: " + Integer.toString(firstAttackersTeam));
-                        for (int i = 0; i < firstAttackersTeam; i++) {
-                            mySoldiers.get(i).queueAttack(getEnemySoldiers().get(0));
-                        }
-                        printDebugString("Second Team: " + Integer.toString(myAttackingUnits.size() - firstAttackersTeam));
-                        for (int i = firstAttackersTeam + 1; i < mySoldiers.size(); i++) {
-                            myAttackingUnits.get(i).queueAttack(getEnemySoldiers().get(1));
-                        }
-
-                        if (availableTanks.size() > 0) {
-                            availableTanks.get(0).queueAttack(getEnemySoldiers().get(0));
-                        } else if (availableTanks.size() > 1) {
-                            availableTanks.get(1).queueAttack(getEnemySoldiers().get(1));
-                            ;
-                        }
-
-                        if (bigTanksAvailable) {
-                            getMyBigTanks().get(0).queueAttack(getEnemySoldiers().get(0));
-
-                            if (getMyBigTanks().size() > 1) {
-                                getMyBigTanks().get(1).queueAttack(getEnemySoldiers().get(1));
-                            }
-                        }
-                    } else if (getEnemySoldiers().size() == 1) {
-                        for (Unit attackingUnit : myAttackingUnits) {
-                            printDebugString("There should be only 1 hostile soldier left!");
-                            attackingUnit.queueAttack(getEnemySoldiers().get(0));
-                        }
-                    } else {
-                        soldierAlive = false;
+            } else {
+                if (mySoldiers.size() > 0) {
+                    for (Unit soldier: getMySoldiers()) {
+                        soldier.queueAttack(getEnemySoldiers().get(0));
                     }
                 }
             }
+        }
 
-            if (!soldierAlive) {
-                if (medicAlive) {
-                    if (getEnemyMedics().size() > 0) {
-                        for (Unit attackingUnit: myAttackingUnits) {
-                            attackingUnit.queueAttack(getEnemyMedics().get(0));
-                        }
-                    } else {
-                        printDebugString("All hostile medics are dead!");
-                        medicAlive = false;
+        if (!soldierAlive) {
+            if (medicAlive) {
+                if (getEnemyMedics().size() > 0) {
+                    for (Unit attackingUnit: myAttackingUnits) {
+                        attackingUnit.queueAttack(getEnemyMedics().get(0));
                     }
                 } else {
-                    if (getEnemyTanks().size() > 0) {
-                        // Test
-                        for (int i = 0; i < getMyTanks().size(); i++) {
-                            getMyTanks().get(0).stop();
-                        }
-                        // Attack normal tanks
-                        for (Unit myUnit : getMyUnits()) {
-                            myUnit.queueAttack(getEnemyTanks().get(0));
-                        }
-                    } else {
-                        // Attack bigTanks
-                        for (Unit myUnit : getMyBigTanks()) {
-                            myUnit.queueAttack(getEnemyBigTanks().get(0));
-                        }
+                    printDebugString("All hostile medics are dead!");
+                    medicAlive = false;
+                }
+            } else {
+                if (getEnemyTanks().size() > 0) {
+                    // Test
+                    for (int i = 0; i < getMyTanks().size(); i++) {
+                        getMyTanks().get(0).stop();
+                    }
+                    // Attack normal tanks
+                    for (Unit myUnit : getMyUnits()) {
+                        myUnit.queueAttack(getEnemyTanks().get(0));
+                    }
+                } else {
+                    // Attack bigTanks
+                    for (Unit myUnit : getMyBigTanks()) {
+                        myUnit.queueAttack(getEnemyBigTanks().get(0));
                     }
                 }
             }
-        // }
+        }
     }
 
     /* */
