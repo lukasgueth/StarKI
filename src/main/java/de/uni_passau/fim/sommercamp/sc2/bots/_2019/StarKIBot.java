@@ -137,29 +137,23 @@ public class StarKIBot extends AbstractBot {
     private Vec2 diagonale()
     {
         Vec2 diagonale;
+        float x,y, length;
         float scale;
+        diagonale = getMapSize().getB().scaled(0.5f);
+        length = diagonale.getLength();
+        x = diagonale.getX();
+        y = diagonale.getY();
+        diagonale = getMapSize().getB().normal();
+        diagonale = diagonale.plus(getMapSize().getB().scaled(0.1f));
+        diagonale = diagonale.rotated(90,'d');
+        //diagonale = diagonale.scaled(1);
 
-        scale = 1;
-
-        if(isTop()) {
-            //diagonale = getRandomPointOnMap();
-            diagonale = getMapSize().getB().normal().negated();
-            while (!isPointOnMap(diagonale)) {
-                scale -= 0.01;
-                diagonale.scaled(scale);
-                printDebugString("Vector isnt right!");
-            }
-        }
-        else {
-            //diagonale = getRandomPointOnMap();
-            diagonale = getMapSize().getB().normal().negated();
-            while (!isPointOnMap(diagonale)) {
-                scale -= 0.01;
-                diagonale.scaled(scale);
-                printDebugString("Vector isnt right!");
-            }
+       if(isTop()) {
+            //diagonale = diagonale.negated();
         }
 
+        printDebugString("X: "+Float.toString(diagonale.getX()));
+        printDebugString("Y: "+Float.toString(diagonale.getY()));
         printDebugString("Vector has been found");
         return diagonale;
     }
@@ -168,13 +162,13 @@ public class StarKIBot extends AbstractBot {
         boolean result;
         Unit unit = getMyUnits().get(0);
         if(unit.getPosition().getY() <10){
-            result = true;
-            printDebugString("I am top!");
+            result = false;
+            printDebugString("I am bottom!");
         }
         else
         {
-            result = false;
-            printDebugString("I am bottom!");
+            result = true;
+            printDebugString("I am top!");
         }
         return result;
     }
@@ -183,8 +177,9 @@ public class StarKIBot extends AbstractBot {
     *   Scout moving around
     * */
     private void scout() {
-        pickScout();
+
         printDebugString("Is running");
+        pickScout();
         myScout.move(diagonale());
         //myScout.move(getRandomPointOnMap());
         scouting = true;
@@ -310,9 +305,10 @@ public class StarKIBot extends AbstractBot {
 
         // Get list of units and store list in "workers"
         // Only in the first GameLoop
+        printDebugString("onStep triggered");
         if (getGameLoop() == 1) {
             workers = getMyUnits();
-
+            printDebugString("Gameloop 1 found!");
             scoutNextToTeam = true;
 
             unitsWaitedForMajorUnitsToMove = new ArrayList();
@@ -322,6 +318,7 @@ public class StarKIBot extends AbstractBot {
         }
 
         if (!foundEnemy() && scoutNextToTeam == true) {
+            printDebugString("No enemy found!");
             if (getGameLoop() % 100 == 1) {
                 scout();
             }
