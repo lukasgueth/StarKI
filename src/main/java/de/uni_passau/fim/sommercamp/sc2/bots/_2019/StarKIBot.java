@@ -21,19 +21,23 @@ public class StarKIBot extends AbstractBot {
     Boolean scouting;
     Boolean scoutNextToTeam;
     List<Integer> unitsWaitedForMajorUnitsToMove;
+    boolean runDiagonale;
 
     /**
      * This constructor is called by the framework. Extend it with all necessary setup, other constructors won't work.
      */
-    public StarKIBot() { name = "Empty Bot"; }
+    public StarKIBot() {
+        name = "Empty Bot";
+        runDiagonale = false;
+    }
 
     /**
      * Get Unit methods
-    */
+     */
 
     private List<Unit> getEnemyMedics() {
         List<Unit> medics = new ArrayList<>();
-        for (Unit medic: getEnemyUnits()) {
+        for (Unit medic : getEnemyUnits()) {
             if (medic.canHeal() && medic.isAliveAndVisible()) {
                 medics.add(medic);
             }
@@ -44,7 +48,7 @@ public class StarKIBot extends AbstractBot {
 
     private List<Unit> getEnemySoldiers() {
         List<Unit> soldiers = new ArrayList<>();
-        for (Unit enemyUnit: getEnemyUnits()) {
+        for (Unit enemyUnit : getEnemyUnits()) {
             if (enemyUnit.getType().equals(Units.TERRAN_MARINE) && enemyUnit.isAliveAndVisible()) {
                 soldiers.add(enemyUnit);
             }
@@ -55,7 +59,7 @@ public class StarKIBot extends AbstractBot {
 
     private List<Unit> getEnemyTanks() {
         List<Unit> tanks = new ArrayList<>();
-        for (Unit enemyUnit: getEnemyUnits()) {
+        for (Unit enemyUnit : getEnemyUnits()) {
             if (enemyUnit.getType().equals(Units.TERRAN_FIREBAT) && enemyUnit.isAliveAndVisible()) {
                 tanks.add(enemyUnit);
             }
@@ -66,7 +70,7 @@ public class StarKIBot extends AbstractBot {
 
     private List<Unit> getEnemyBigTanks() {
         List<Unit> bigTanks = new ArrayList<>();
-        for (Unit enemyUnit: getEnemyUnits()) {
+        for (Unit enemyUnit : getEnemyUnits()) {
             if (enemyUnit.getType().equals(Units.TERRAN_MARAUDER) && enemyUnit.isAliveAndVisible()) {
                 bigTanks.add(enemyUnit);
             }
@@ -77,7 +81,7 @@ public class StarKIBot extends AbstractBot {
 
     private List<Unit> getMyMedics() {
         List<Unit> medics = new ArrayList<>();
-        for (Unit medic: getMyUnits()) {
+        for (Unit medic : getMyUnits()) {
             if (medic.canHeal() && medic.isAliveAndVisible()) {
                 medics.add(medic);
             }
@@ -86,33 +90,33 @@ public class StarKIBot extends AbstractBot {
         return medics;
     }
 
-    private List<Unit> getMyTanks(){
+    private List<Unit> getMyTanks() {
         List<Unit> tanks = new ArrayList<>();
-        for (Unit tank: getMyUnits()) {
+        for (Unit tank : getMyUnits()) {
 
-            if(tank.getType() == Units.TERRAN_FIREBAT && tank.isAliveAndVisible()){
+            if (tank.getType() == Units.TERRAN_FIREBAT && tank.isAliveAndVisible()) {
                 tanks.add(tank);
-        }
+            }
         }
         return tanks;
     }
 
-    private List<Unit> getMyBigTanks(){
+    private List<Unit> getMyBigTanks() {
         List<Unit> bigTanks = new ArrayList<>();
-        for (Unit tank: getMyUnits()) {
+        for (Unit tank : getMyUnits()) {
 
-            if(tank.getType() == Units.TERRAN_MARAUDER &&  tank.isAliveAndVisible()){
+            if (tank.getType() == Units.TERRAN_MARAUDER && tank.isAliveAndVisible()) {
                 bigTanks.add(tank);
             }
         }
         return bigTanks;
     }
 
-    private List<Unit> getMySoldiers(){
+    private List<Unit> getMySoldiers() {
         List<Unit> soldiers = new ArrayList<>();
-        for (Unit soldier: getMyUnits()) {
+        for (Unit soldier : getMyUnits()) {
 
-            if(soldier.getType() == Units.TERRAN_MARINE && soldier.isAliveAndVisible()){
+            if (soldier.getType() == Units.TERRAN_MARINE && soldier.isAliveAndVisible()) {
                 soldiers.add(soldier);
             }
         }
@@ -129,12 +133,11 @@ public class StarKIBot extends AbstractBot {
      */
 
     // When a Unit`s HP drops below 50%, the unit asks a medic for its position and move towards it
-    private void checkHP(){
-        for(Unit unit : getMyUnits()){
-            if(unit.isAliveAndVisible() && unit.getHealth()/unit.getMaxHealth() <= 0.50)
-            {
+    private void checkHP() {
+        for (Unit unit : getMyUnits()) {
+            if (unit.isAliveAndVisible() && unit.getHealth() / unit.getMaxHealth() <= 0.50) {
                 //Vec2 position = unit.getPosition();
-                for(Unit medic: getMyMedics()){
+                for (Unit medic : getMyMedics()) {
                     medic.queueHeal(unit);
                 }
             }
@@ -153,7 +156,7 @@ public class StarKIBot extends AbstractBot {
         } else {
             if (getMySoldiers().size() > 0) {
                 myScout = getMySoldiers().get(0);
-            } else{
+            } else {
                 myScout = getMyMedics().get(0);
             }
         }
@@ -162,7 +165,7 @@ public class StarKIBot extends AbstractBot {
     // Generates Map-Diagonale
     private Vec2 diagonale() {
         Vec2 diagonale;
-        float x,y, length;
+        float x, y, length;
         float scale;
         diagonale = getMapSize().getB().scaled(0.5f);
         length = diagonale.getLength();
@@ -171,18 +174,17 @@ public class StarKIBot extends AbstractBot {
         diagonale = getMapSize().getB().normal();
         diagonale = diagonale.plus(getMapSize().getB().scaled(0.1f));
 
-       if(!isTop()) {
-           diagonale = diagonale.rotated(25,'d');
-           diagonale = diagonale.scaled(length/3);
+        if (!isTop()) {
+            diagonale = diagonale.rotated(25, 'd');
+            diagonale = diagonale.scaled(length / 3);
+        } else {
+
+            diagonale = diagonale.rotated(-50, 'd');
+            diagonale = diagonale.scaled(length / 3.5f);
         }
-       else{
 
-           diagonale = diagonale.rotated(-50,'d');
-           diagonale = diagonale.scaled(length/3.5f);
-       }
-
-        printDebugString("X: "+Float.toString(diagonale.getX()));
-        printDebugString("Y: "+Float.toString(diagonale.getY()));
+        printDebugString("X: " + Float.toString(diagonale.getX()));
+        printDebugString("Y: " + Float.toString(diagonale.getY()));
         printDebugString("Vector has been found");
         return diagonale;
     }
@@ -190,12 +192,10 @@ public class StarKIBot extends AbstractBot {
     private boolean isTop() {
         boolean result;
         Unit unit = getMyUnits().get(0);
-        if(unit.getPosition().getY() <10){
+        if (unit.getPosition().getY() < 10) {
             result = false;
             printDebugString("I am bottom!");
-        }
-        else
-        {
+        } else {
             result = true;
             printDebugString("I am top!");
         }
@@ -205,7 +205,15 @@ public class StarKIBot extends AbstractBot {
     // Scout moving around
     private void scout() {
         printDebugString("Is running");
-        myScout.move(diagonale());
+        if (!runDiagonale){
+            myScout.move(diagonale());
+        runDiagonale = true;
+    }
+    else
+
+    {
+        myScout.move(getRandomPointOnMap());
+    }
         //myScout.move(getRandomPointOnMap());
         scouting = true;
     }
@@ -218,7 +226,15 @@ public class StarKIBot extends AbstractBot {
 
         printDebugString("Cleared orders of Scout.");
 
-        myScout.move(getMyMedics().get(0).getPosition());
+        if (getMyMedics().size() > 0) {
+            myScout.move(getMyMedics().get(0).getPosition());
+        } else if (getMySoldiers().size() > 0) {
+            myScout.move(getMySoldiers().get(getMySoldiers().size() - 1).getPosition());
+        } else if (getMyTanks().size() > 0) {
+            myScout.move(getMyTanks().get(getMyTanks().size() - 1).getPosition());
+        } else if (getMyBigTanks().size() > 0) {
+            myScout.move(getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition());
+        }
 
         scoutNextToTeam = false;
     }
@@ -271,6 +287,10 @@ public class StarKIBot extends AbstractBot {
                         bigTank.move(enemyLocation);
                     }
 
+                    for (Unit medic: getMyMedics()) {
+                        medic.move(enemyLocation);
+                    }
+
                     unitsWaitedForMajorUnitsToMove.add(2, unitsWaitedForMajorUnitsToMove.get(2) + 1);
 
                 } else if (unitsWaitedForMajorUnitsToMove.get(2) > 2 && unitsWaitedForMajorUnitsToMove.get(1) < 3) {
@@ -283,10 +303,6 @@ public class StarKIBot extends AbstractBot {
                 } else if (unitsWaitedForMajorUnitsToMove.get(1) > 2 && unitsWaitedForMajorUnitsToMove.get(0) < 2) {
                     for (Unit soldier: getMySoldiers()) {
                         soldier.move(enemyLocation);
-                    }
-
-                    for (Unit medic: getMyMedics()) {
-                        medic.move(enemyLocation);
                     }
 
                     unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
@@ -341,17 +357,22 @@ public class StarKIBot extends AbstractBot {
     }
 
     private boolean teamNextToEnemy() {
+        float myUnitX = 0;
+        float myUnitY = 0;
+        float enemyX = enemyLocation.getX();
+        float enemyY = enemyLocation.getY();
+
         if(getMyMedics().size() > 0) {
-            float medicX = getMyMedics().get(0).getPosition().getX();
-            float medicY = getMyMedics().get(0).getPosition().getY();
-            float enemyX = enemyLocation.getX();
-            float enemyY = enemyLocation.getY();
+            myUnitX = getMyMedics().get(0).getPosition().getX();
+            myUnitY = getMyMedics().get(0).getPosition().getY();;
+        } else if (getMySoldiers().size() > 0) {
+            myUnitX = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getX();
+            myUnitY = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getY();
+        }
 
-
-            if (medicX - enemyX > 5 || medicX - enemyX > -5) {
-                if (medicY - enemyY > 5 || medicY - enemyY > -5) {
-                    return true;
-                }
+        if (myUnitX - enemyX > 5 || myUnitX - enemyX > -5) {
+            if (myUnitY - enemyY > 5 || myUnitY - enemyY > -5) {
+                return true;
             }
         }
 
@@ -390,6 +411,7 @@ public class StarKIBot extends AbstractBot {
     private void intellegentAttack() {
         boolean medicAlive = true;
         boolean soldierAlive = true;
+        boolean tankAlive = true;
 
         List<Unit> myAttackingUnits = new ArrayList<>();
         printDebugString("Created List myAttackingUnits.");
@@ -399,22 +421,32 @@ public class StarKIBot extends AbstractBot {
             }
         }
 
-        List<Unit> mySoldiers = getMySoldiers();
-        List<Unit> myTanks = getMyTanks();
-
         printDebugString("intellegentAttack wurde gecallt!");
 
-        // if (!medicAlive) {
+        if (tankAlive) {
+            printDebugString("Tanks alive: " + Integer.toString(getEnemyTanks().size()));
+            if (getEnemyTanks().size() > 0) {
+                for (Unit myAttacker : myAttackingUnits) {
+                    myAttacker.queueAttack(getEnemyTanks().get(0));
+                }
+            } else {
+                tankAlive = false;
+            }
+        } else {
             if (soldierAlive) {
                 printDebugString("There are soldier's alive");
                 // If normal tanks are not helping to kill the medics they help killing the soldiers
                 List<Unit> availableTanks = new ArrayList<>();
-                for (Unit tank : getMyTanks()) {
-                    for (int i = 0; i < tank.getOrders().size(); i++) {
-                        if (!tank.getOrders().get(i).getTargetedUnitTag().equals(Units.TERRAN_MEDIC)) {
-                            availableTanks.add(tank);
+                if (getMyTanks().size() > 0) {
+                    for (Unit tank : getMyTanks()) {
+                        for (int i = 0; i < tank.getOrders().size(); i++) {
+                            if (!tank.getOrders().get(i).getTargetedUnitTag().equals(Units.TERRAN_MEDIC)) {
+                                availableTanks.add(tank);
+                            }
                         }
                     }
+                } else {
+                    availableTanks = new ArrayList<>();
                 }
 
                 // If bigTanks are not killing medics anymore
@@ -430,16 +462,16 @@ public class StarKIBot extends AbstractBot {
                     bigTanksAvailable = false;
                 }
 
-                if (mySoldiers.size() + availableTanks.size() > 2) {
+                if (getMySoldiers().size() + availableTanks.size() > 2) {
                     if (getEnemySoldiers().size() > 1) {
-                        int firstAttackersTeam = mySoldiers.size() / 2;
+                        int firstAttackersTeam = getMySoldiers().size() / 2;
                         printDebugString("Team attacks enemySoldiers.");
                         printDebugString("First Team: " + Integer.toString(firstAttackersTeam));
                         for (int i = 0; i < firstAttackersTeam; i++) {
-                            mySoldiers.get(i).queueAttack(getEnemySoldiers().get(0));
+                            getMySoldiers().get(i).queueAttack(getEnemySoldiers().get(0));
                         }
                         printDebugString("Second Team: " + Integer.toString(myAttackingUnits.size() - firstAttackersTeam));
-                        for (int i = firstAttackersTeam + 1; i < mySoldiers.size(); i++) {
+                        for (int i = firstAttackersTeam + 1; i < getMySoldiers().size(); i++) {
                             myAttackingUnits.get(i).queueAttack(getEnemySoldiers().get(1));
                         }
 
@@ -465,13 +497,19 @@ public class StarKIBot extends AbstractBot {
                     } else {
                         soldierAlive = false;
                     }
+                } else {
+                    if (getMySoldiers().size() > 0) {
+                        for (Unit soldier : getMySoldiers()) {
+                            soldier.queueAttack(getEnemySoldiers().get(0));
+                        }
+                    }
                 }
             }
 
             if (!soldierAlive) {
                 if (medicAlive) {
                     if (getEnemyMedics().size() > 0) {
-                        for (Unit attackingUnit: myAttackingUnits) {
+                        for (Unit attackingUnit : myAttackingUnits) {
                             attackingUnit.queueAttack(getEnemyMedics().get(0));
                         }
                     } else {
@@ -496,7 +534,7 @@ public class StarKIBot extends AbstractBot {
                     }
                 }
             }
-        // }
+        }
     }
 
     /* */
