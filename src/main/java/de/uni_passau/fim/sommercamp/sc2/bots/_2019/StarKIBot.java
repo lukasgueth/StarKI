@@ -258,8 +258,8 @@ public class StarKIBot extends AbstractBot {
         }
 
         if (myScout.isAliveAndVisible()) {
-            if (teamPosition.get(0) - myScout.getPosition().getX() < 2.5 || teamPosition.get(0) - myScout.getPosition().getX() > -2.5) {
-                if (teamPosition.get(1) - myScout.getPosition().getY() < 2.5 || teamPosition.get(1) - myScout.getPosition().getY() > -2.5) {
+            if (teamPosition.get(0) - myScout.getPosition().getX() < 2.5 && teamPosition.get(0) - myScout.getPosition().getX() > -2.5) {
+                if (teamPosition.get(1) - myScout.getPosition().getY() < 2.5 && teamPosition.get(1) - myScout.getPosition().getY() > -2.5) {
                     printDebugString("Scout is near Team.");
                     nearTeam = true;
                 }
