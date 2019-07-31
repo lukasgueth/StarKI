@@ -256,10 +256,11 @@ public class StarKIBot extends AbstractBot {
             teamPosition.add(0, getMyBigTanks().get(0).getPosition().getX());
             teamPosition.add(1, getMyBigTanks().get(0).getPosition().getY());
         }
-
+        printDebugString("Teamposition: (" + teamPosition.get(0) + "," + teamPosition.get(1));
+        printDebugString("Scoutposition: (" + myScout.getPosition().getX() + "," + myScout.getPosition().getY());
         if (myScout.isAliveAndVisible()) {
-            if (teamPosition.get(0) - myScout.getPosition().getX() < 2.5 || teamPosition.get(0) - myScout.getPosition().getX() > -2.5) {
-                if (teamPosition.get(1) - myScout.getPosition().getY() < 2.5 || teamPosition.get(1) - myScout.getPosition().getY() > -2.5) {
+            if (teamPosition.get(0) - myScout.getPosition().getX() < 1 && teamPosition.get(0) - myScout.getPosition().getX() > -1) {
+                if (teamPosition.get(1) - myScout.getPosition().getY() < 1 && teamPosition.get(1) - myScout.getPosition().getY() > -1) {
                     printDebugString("Scout is near Team.");
                     nearTeam = true;
                 }
@@ -300,7 +301,7 @@ public class StarKIBot extends AbstractBot {
                     printDebugString("Tanks are moving.");
                     unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
 
-                } else if (unitsWaitedForMajorUnitsToMove.get(1) > 2 && unitsWaitedForMajorUnitsToMove.get(0) < 2) {
+                } else if (unitsWaitedForMajorUnitsToMove.get(1) > 2 && unitsWaitedForMajorUnitsToMove.get(0) < 200) {
                     for (Unit soldier: getMySoldiers()) {
                         soldier.move(enemyLocation);
                     }
