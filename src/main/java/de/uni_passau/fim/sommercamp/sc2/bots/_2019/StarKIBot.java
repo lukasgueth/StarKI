@@ -233,7 +233,40 @@ public class StarKIBot extends AbstractBot {
                 break;
             case "backwards":
                 if (!healerHealing()) {
+                    Vec2 OurPositionBeforeWithdrawal = getMyMedics().get(0).getPosition();
+                    Vec2 EnemyPositionBeforeWithdrawal = getEnemyMedics().get(0).getPosition();
+                    Vec2 DirectionOfRetreat = OurPositionBeforeWithdrawal.plus(EnemyPositionBeforeWithdrawal);
 
+                    if (unitsWaitedForMajorUnitsToMove.get(2) < 3) {
+                        for (Unit bigTank: getMyBigTanks()) {
+                            bigTank.move(DirectionOfRetreat);
+                        }
+
+                        unitsWaitedForMajorUnitsToMove.add(2, unitsWaitedForMajorUnitsToMove.get(2) + 1);
+
+                    } else if (unitsWaitedForMajorUnitsToMove.get(2) > 2 && unitsWaitedForMajorUnitsToMove.get(1) < 3) {
+                        for (Unit Tank: getMyTanks()) {
+                            Tank.move(DirectionOfRetreat);
+                        }
+                        printDebugString("Tanks are moving.");
+                        unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
+
+                    } else if (unitsWaitedForMajorUnitsToMove.get(1) > 2 && unitsWaitedForMajorUnitsToMove.get(0) < 2) {
+                        for (Unit soldier: getMySoldiers()) {
+                            soldier.move(DirectionOfRetreat);
+                        }
+
+                        for (Unit medic: getMyMedics()) {
+                            medic.move(DirectionOfRetreat);
+                        }
+
+                        unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
+                    }
+
+                    printDebugString("Backwards !healerHealing Units should withdraw/retreat");
+                }
+                else {
+                    printDebugString("Backwards !healerHealing Units should withdraw/retreat but somehow it's ELSE");
                 }
                 break;
         }
@@ -246,9 +279,20 @@ public class StarKIBot extends AbstractBot {
      */
 
     private boolean healerHealing() {
-        for (Unit medic: getMyMedics()) {
+        boolean healerAreHealing = true;
 
+        if (getMyMedics().size() > 0) {
+            for (Unit medic: getMyMedics()) {
+                if (medic.getEnergy() != medic.getMaxEnergy()) {
+                    printDebugString("healerHealing is FALSE");
+                    healerAreHealing = false;
+                } else {
+                    printDebugString("healerHealing is TRUE");
+                }
+            }
         }
+        printDebugString("Healer are healing.");
+        return healerAreHealing;
     }
 
     /* */
@@ -283,6 +327,11 @@ public class StarKIBot extends AbstractBot {
             for (int i=0; i < 3; i++) {
                 unitsWaitedForMajorUnitsToMove.add(i, 0);
             }
+        }
+
+        boolean etgaefjoi = healerHealing();
+        if (!healerHealing()) {
+            moveTeam("backwards");
         }
 
         if (!foundEnemy() && scoutNextToTeam == true) {
