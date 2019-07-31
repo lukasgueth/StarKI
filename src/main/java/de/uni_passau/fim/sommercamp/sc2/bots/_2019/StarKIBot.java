@@ -142,6 +142,11 @@ public class StarKIBot extends AbstractBot {
         }
     }
 
+    // When a high precentage of units is on weapon cooldown, fall back
+    private void checkWC(){
+
+    }
+
     // Picks one unit to go scouting
     private void pickScout() {
         // Check if at least one bigTank is alive and pick it as a scout
@@ -206,8 +211,11 @@ public class StarKIBot extends AbstractBot {
     // Scout moving around
     private void scout() {
 
+        while (!foundEnemy())
+        {
+
+        }
         printDebugString("Is running");
-        pickScout();
         myScout.move(diagonale());
         //myScout.move(getRandomPointOnMap());
         scouting = true;
@@ -461,6 +469,11 @@ public class StarKIBot extends AbstractBot {
         // Get list of units and store list in "workers"
         // Only in the first GameLoop
         printDebugString("onStep triggered");
+        getMyTanks();
+        getMyMedics();
+        getMySoldiers();
+        getMyBigTanks();
+        pickScout();
         if (getGameLoop() == 1) {
             workers = getMyUnits();
             printDebugString("Gameloop 1 found!");
@@ -487,12 +500,12 @@ public class StarKIBot extends AbstractBot {
                 returnScoutToTeam();
             }
 
-            if (scoutNearTeam() && !teamNextToEnemy()) {
-                printDebugString("Scout is back Home!");
 
-                moveTeam("towardsEnemy");
-            }
+                if (scoutNearTeam() && !teamNextToEnemy()) {
+                    printDebugString("Scout is back Home!");
 
+                    moveTeam("towardsEnemy");
+                }
             printDebugString("Medic is at: " + getMyMedics().get(0).getPosition().getX() + "," + getMyMedics().get(0).getPosition().getY());
             printDebugString("Enemy is at: " + enemyLocation.getX() + "," + enemyLocation.getY());
 
@@ -503,6 +516,6 @@ public class StarKIBot extends AbstractBot {
         }
         checkHP();
 
-        Boolean egal = scoutNearTeam();
+
     }
 }
