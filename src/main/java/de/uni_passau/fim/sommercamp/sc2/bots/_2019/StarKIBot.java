@@ -211,10 +211,10 @@ public class StarKIBot extends AbstractBot {
     // Scout moving around
     private void scout() {
 
-        while (!foundEnemy())
+       /* while (!foundEnemy())
         {
 
-        }
+        } */
         printDebugString("Is running");
         myScout.move(diagonale());
         //myScout.move(getRandomPointOnMap());
