@@ -315,8 +315,8 @@ public class StarKIBot extends AbstractBot {
             teamPosition.add(0, getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition().getX());
             teamPosition.add(1, getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition().getY());
         } else if (getMyMedics().size() > 0) {
-            teamPosition.add(0, getMyMedics().get(getMyBigTanks().size() - 1).getPosition().getX());
-            teamPosition.add(1, getMyMedics().get(getMyBigTanks().size() - 1).getPosition().getY());
+            teamPosition.add(0, getMyMedics().get(getMyMedics().size() - 1).getPosition().getX());
+            teamPosition.add(1, getMyMedics().get(getMyMedics().size() - 1).getPosition().getY());
         }
 
         printDebugString("Teamposition: (" + teamPosition.get(0) + "," + teamPosition.get(1));
