@@ -142,10 +142,72 @@ public class StarKIBot extends AbstractBot {
     // When a Unit`s HP drops below 50%, the unit asks a medic for its position and move towards it
     private void checkHP() {
         for (Unit unit : getMyUnits()) {
-            if (unit.isAliveAndVisible() && unit.getHealth() / unit.getMaxHealth() <= 0.50) {
+            if (unit.isAliveAndVisible() && unit.getHealth() / unit.getMaxHealth() <= 0.70) {
                 //Vec2 position = unit.getPosition();
                 for (Unit medic : getMyMedics()) {
+
+                    boolean healingIsQueued = medic.getOrders().stream().anyMatch(order ->
+                            order.getTargetedUnitTag().map(this::getUnit).map(u -> u.equals(unit)).orElse(false)
+                    );
+                    if(!healingIsQueued){
+                        medic.stop();
+                    }
                     medic.queueHeal(unit);
+                }
+            }
+            else{
+
+                List<Unit> medics = new ArrayList<>();
+                for (Unit medic: getMyMedics()){
+                    int i = 0;
+                    medics.add(i,medic);
+                    i++;
+                }
+                if(getMyBigTanks().size()>0)
+                {
+                    for(Unit follower: getMyBigTanks()){
+                        if(!follower.getType().equals(myScout)){
+
+                            if(getMyMedics().size() >0){
+                                medics.get(0).move(follower.getPosition().scaled(0.90f));
+                            }
+                            if(getMyMedics().size() > 1){
+                                medics.get(1).move(follower.getPosition().scaled(0.85f));
+                            }
+                        }
+                    }
+                }
+                else if(getMyTanks().size()>0)
+                {
+                    for(Unit follower: getMyTanks()){
+                        if(!follower.getType().equals(myScout)){
+
+                            if(getMyMedics().size() >0){
+                                medics.get(0).move(follower.getPosition().scaled(0.90f));
+                            }
+                            if(getMyMedics().size() > 1){
+                                medics.get(1).move(follower.getPosition().scaled(0.85f));
+                            }
+                        }
+                    }
+                }
+                else if(getMySoldiers().size()>0)
+                {
+                    for(Unit follower: getMySoldiers()){
+                        if(!follower.getType().equals(myScout)){
+
+                            if(getMyMedics().size() >0){
+                                medics.get(0).move(follower.getPosition().scaled(0.90f));
+                            }
+                            if(getMyMedics().size() > 1){
+                                medics.get(1).move(follower.getPosition().scaled(0.85f));
+                            }
+                        }
+                    }
+                }
+                else{
+                    medics.get(0).move(getRandomPointOnMap());
+                    medics.get(1).move(getRandomPointOnMap());
                 }
             }
         }
@@ -170,12 +232,9 @@ public class StarKIBot extends AbstractBot {
     // Generates Map-Diagonale
     private Vec2 diagonale() {
         Vec2 diagonale;
-        float x, y, length;
-        float scale;
+        float length;
         diagonale = getMapSize().getB().scaled(0.5f);
         length = diagonale.getLength();
-        x = diagonale.getX();
-        y = diagonale.getY();
         diagonale = getMapSize().getB().normal();
         diagonale = diagonale.plus(getMapSize().getB().scaled(0.1f));
 
@@ -188,8 +247,8 @@ public class StarKIBot extends AbstractBot {
             diagonale = diagonale.scaled(length / 3.5f);
         }
 
-        printDebugString("X: " + Float.toString(diagonale.getX()));
-        printDebugString("Y: " + Float.toString(diagonale.getY()));
+        printDebugString("X: " + diagonale.getX());
+        printDebugString("Y: " + diagonale.getY());
         printDebugString("Vector has been found");
         return diagonale;
     }
@@ -257,8 +316,8 @@ public class StarKIBot extends AbstractBot {
             teamPosition.add(0, getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition().getX());
             teamPosition.add(1, getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition().getY());
         } else if (getMyMedics().size() > 0) {
-            teamPosition.add(0, getMyMedics().get(getMyBigTanks().size() - 1).getPosition().getX());
-            teamPosition.add(1, getMyMedics().get(getMyBigTanks().size() - 1).getPosition().getY());
+            teamPosition.add(0, getMyMedics().get(getMyMedics().size() - 1).getPosition().getX());
+            teamPosition.add(1, getMyMedics().get(getMyMedics().size() - 1).getPosition().getY());
         }
 
         printDebugString("Teamposition: (" + teamPosition.get(0) + "," + teamPosition.get(1));
@@ -386,23 +445,6 @@ public class StarKIBot extends AbstractBot {
     /**
      * Healer methods
      */
-
-    private boolean healerHealing() {
-        boolean healerAreHealing = true;
-
-        if (getMyMedics().size() > 0) {
-            for (Unit medic: getMyMedics()) {
-                if (medic.getEnergy() != medic.getMaxEnergy()) {
-                    printDebugString("healerHealing is FALSE");
-                    healerAreHealing = false;
-                } else {
-                    printDebugString("healerHealing is TRUE");
-                }
-            }
-        }
-        printDebugString("Healer are healing.");
-        return healerAreHealing;
-    }
 
     /* */
 
@@ -541,7 +583,7 @@ public class StarKIBot extends AbstractBot {
         }
 
         if (getMyUnits().size() > 0) {
-            if (!foundEnemy() && scoutNextToTeam == true) {
+            if (!foundEnemy() && scoutNextToTeam) {
                 printDebugString("No enemy found!");
                 if (getGameLoop() % 100 == 1) {
                     scout();
@@ -581,7 +623,8 @@ public class StarKIBot extends AbstractBot {
                 }
             }
         }
-
-        checkHP();
+        if(getMyMedics().size() >0){
+           checkHP();
+        }
     }
 }
