@@ -142,7 +142,12 @@ public class StarKIBot extends AbstractBot {
                 //Vec2 position = unit.getPosition();
                 for (Unit medic : getMyMedics()) {
 
-
+                    boolean healingIsQueued = medic.getOrders().stream().anyMatch(order ->
+                            order.getTargetedUnitTag().map(this::getUnit).map(u -> u.equals(unit)).orElse(false)
+                    );
+                    if(!healingIsQueued){
+                        medic.stop();
+                    }
                     medic.queueHeal(unit);
                 }
             }
@@ -159,8 +164,12 @@ public class StarKIBot extends AbstractBot {
                     for(Unit follower: getMyBigTanks()){
                         if(!follower.getType().equals(myScout)){
 
-                            medics.get(0).move(follower.getPosition().scaled(0.96f));
-                            medics.get(1).move(follower.getPosition().scaled(0.93f));
+                            if(getMyMedics().size() >0){
+                                medics.get(0).move(follower.getPosition().scaled(0.95f));
+                            }
+                            if(getMyMedics().size() > 1){
+                                medics.get(1).move(follower.getPosition().scaled(0.90f));
+                            }
                         }
                     }
                 }
@@ -168,8 +177,13 @@ public class StarKIBot extends AbstractBot {
                 {
                     for(Unit follower: getMyTanks()){
                         if(!follower.getType().equals(myScout)){
-                            medics.get(0).move(follower.getPosition().scaled(0.96f));
-                            medics.get(1).move(follower.getPosition().scaled(0.93f));
+
+                            if(getMyMedics().size() >0){
+                                medics.get(0).move(follower.getPosition().scaled(0.95f));
+                            }
+                            if(getMyMedics().size() > 1){
+                                medics.get(1).move(follower.getPosition().scaled(0.90f));
+                            }
                         }
                     }
                 }
@@ -177,8 +191,13 @@ public class StarKIBot extends AbstractBot {
                 {
                     for(Unit follower: getMySoldiers()){
                         if(!follower.getType().equals(myScout)){
-                            medics.get(0).move(follower.getPosition().scaled(0.96f));
-                            medics.get(1).move(follower.getPosition().scaled(0.93f));
+
+                            if(getMyMedics().size() >0){
+                                medics.get(0).move(follower.getPosition().scaled(0.95f));
+                            }
+                            if(getMyMedics().size() > 1){
+                                medics.get(1).move(follower.getPosition().scaled(0.90f));
+                            }
                         }
                     }
                 }
@@ -387,8 +406,9 @@ public class StarKIBot extends AbstractBot {
             myUnitY = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getY();
         }
 
-        if (myUnitX - enemyX > 2.5 || myUnitX - enemyX > -2.5) {
-            if (myUnitY - enemyY > 2.5 || myUnitY - enemyY > -2.5) {
+        if (myUnitX - enemyX > 2.5 || myUnitX - enemyX > 2.5) {
+            if (myUnitY - enemyY > 2.5 || myUnitY - enemyY > 2.5) {
+                printDebugString("Team is near Enemy");
                 return true;
             }
         }
@@ -526,7 +546,8 @@ public class StarKIBot extends AbstractBot {
                 }
             }
         }
-
-        checkHP();
+        if(getMyMedics().size() >0){
+           checkHP();
+        }
     }
 }
