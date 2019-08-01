@@ -151,16 +151,14 @@ public class StarKIBot extends AbstractBot {
         // Check if at least one bigTank is alive and pick it as a scout
         // Else if pick a normal tank
         // Else if pick a marine
-        if (getMyBigTanks().size() > 0) {
+         if (getMyBigTanks().size() > 0) {
             myScout = getMyBigTanks().get(0);
         } else if (getMyTanks().size() > 0) {
             myScout = getMyTanks().get(0);
-        } else {
-            if (getMySoldiers().size() > 0) {
-                myScout = getMySoldiers().get(0);
-            } else {
+        } else if (getMySoldiers().size() > 0) {
+             myScout = getMySoldiers().get(0);
+         } else {
                 myScout = getMyMedics().get(0);
-            }
         }
     }
 
@@ -375,6 +373,7 @@ public class StarKIBot extends AbstractBot {
     private void marinesAttack() {
         printDebugString("This is marinesAttack!");
 
+
         List<Unit> marines = new ArrayList<>();
 
         for (int i = 0; i < getMySoldiers().size(); i++) {
@@ -384,16 +383,8 @@ public class StarKIBot extends AbstractBot {
         for (Unit attacker: marines) {
             if (getEnemySoldiers().size() > 0) {
                 if (getMySoldiers().size() > 0) {
-                    myScout.move(getMySoldiers().get(getMySoldiers().size() - 1).getPosition());
-                    if(scoutNearTeam() == true){
-                        moveTeam("towardsEnemy");
-                        attacker.queueAttack(getEnemySoldiers().get(0));
-                        printDebugString("Attacking enemySoldier_0 on Marines-Map!");
-                    }
-                    else {
-                        moveTeam("towardsEnemy");
-                        printDebugString("marinesAttack scoutNearTeam false");
-                    }
+                    attacker.queueAttack(getEnemySoldiers().get(0));
+                    printDebugString("Attacking enemySoldier_0 on Marines-Map!");
                 }
                 else {
                     attacker.queueAttack(getEnemySoldiers().get(0));
@@ -409,23 +400,23 @@ public class StarKIBot extends AbstractBot {
         if (getEnemyTanks().size() > 0) {
             printDebugString("Now attacking their tanks.");
             for (Unit attacker: getMyUnits()) {
-                if (!queuedTarget.equals("enemyTanks")) {
-                    attacker.stop();
-                }
-                attacker.queueAttack(getEnemyTanks().get(0));
-                printDebugString("Attacking enemy TANKS!");
+            if (!queuedTarget.equals("enemyTanks")) {
+                attacker.stop();
             }
-            queuedTarget = "enemyTanks";
-        } else if (getEnemySoldiers().size() > 0) {
-            for (Unit attacker: getMyUnits()) {
-                if (getEnemyTanks().size() == 0 && !queuedTarget.equals("enemySoldiers")) {
-                    attacker.stop();
-                }
-                attacker.queueAttack(getEnemySoldiers().get(0));
-                printDebugString("Attacking enemy SOLDIERS!");
+            attacker.queueAttack(getEnemyTanks().get(0));
+            printDebugString("Attacking enemy TANKS!");
+        }
+        queuedTarget = "enemyTanks";
+    } else if (getEnemySoldiers().size() > 0) {
+        for (Unit attacker: getMyUnits()) {
+            if (getEnemyTanks().size() == 0 && !queuedTarget.equals("enemySoldiers")) {
+                attacker.stop();
             }
-            queuedTarget = "enemySoldiers";
-        } else if (getEnemyMedics().size() > 0) {
+            attacker.queueAttack(getEnemySoldiers().get(0));
+            printDebugString("Attacking enemy SOLDIERS!");
+        }
+        queuedTarget = "enemySoldiers";
+    } else if (getEnemyMedics().size() > 0) {
             for (Unit attacker: getMyUnits()) {
                 if (getEnemySoldiers().size() == 0 && !queuedTarget.equals("enemyMedics")) {
                     attacker.stop();
@@ -462,8 +453,6 @@ public class StarKIBot extends AbstractBot {
             unitsWaitedForMajorUnitsToMove = 0;
         }
 
-        mapDetermination();
-
         if (getMyUnits().size() > 0) {
             if (!foundEnemy() && scoutNextToTeam == true) {
                 printDebugString("No enemy found!");
@@ -490,6 +479,7 @@ public class StarKIBot extends AbstractBot {
                 if (teamNextToEnemy()) {
                     printDebugString("Team is next to Enemy!");
                     intellegentAttack();
+                    mapDetermination();
                 }
             }
         }
