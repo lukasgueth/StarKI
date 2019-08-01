@@ -360,6 +360,37 @@ public class StarKIBot extends AbstractBot {
      * Attack methods
      */
 
+    private void mapDetermination(){
+
+        if (getMyUnits().size() == getMySoldiers().size()) {
+            marinesAttack();
+            printDebugString("This fight takes place on a Marines-Map!");
+        }
+        else {
+            intellegentAttack();
+            printDebugString("This fight doesn't take place on a Marines-Map!");
+        }
+    }
+
+    private void marinesAttack() {
+        printDebugString("This is marinesAttack!");
+
+        List<Unit> marines = new ArrayList<>();
+
+        for (int i = 0; i < getMySoldiers().size(); i++) {
+            marines.add(getMySoldiers().get(i));
+        }
+
+        for (Unit attacker: marines) {
+            if (getEnemySoldiers().size() > 0) {
+                attacker.queueAttack(getEnemySoldiers().get(0));
+                printDebugString("Attacking enemySoldier_0 on Marines-Map!");
+            } else {
+                printDebugString("All enemy marines are either not yet discovered or dead!");
+            }
+        }
+    }
+
     private void intellegentAttack() {
         if (getEnemyTanks().size() > 0) {
             printDebugString("Now attacking their tanks.");
@@ -412,6 +443,8 @@ public class StarKIBot extends AbstractBot {
 
             unitsWaitedForMajorUnitsToMove = 0;
         }
+
+        mapDetermination();
 
         if (getMyUnits().size() > 0) {
             if (!foundEnemy() && scoutNextToTeam == true) {
