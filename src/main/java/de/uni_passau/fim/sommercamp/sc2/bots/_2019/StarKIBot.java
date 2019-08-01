@@ -137,9 +137,15 @@ public class StarKIBot extends AbstractBot {
     // When a Unit`s HP drops below 50%, the unit asks a medic for its position and move towards it
     private void checkHP() {
         for (Unit unit : getMyUnits()) {
-            if (unit.isAliveAndVisible() && unit.getHealth() / unit.getMaxHealth() <= 0.50) {
+            if (unit.isAliveAndVisible() && unit.getHealth() / unit.getMaxHealth() <= 0.70) {
                 //Vec2 position = unit.getPosition();
                 for (Unit medic : getMyMedics()) {
+                    medic.stop();
+                    medic.queueHeal(unit);
+                }
+            }
+            else{
+                for (Unit medic: getMyMedics()){
                     medic.queueHeal(unit);
                 }
             }
@@ -290,7 +296,7 @@ public class StarKIBot extends AbstractBot {
                     }
                 }
 
-                if (unitsWaitedForMajorUnitsToMove > 2) {
+                if (unitsWaitedForMajorUnitsToMove > 3) {
                     for (Unit myUnit: getMyUnits()) {
                         if (myUnit.getType().equals(Units.TERRAN_MARINE)) {
                             if (!foundEnemy()) {
@@ -319,8 +325,8 @@ public class StarKIBot extends AbstractBot {
             myUnitY = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getY();
         }
 
-        if (myUnitX - enemyX > 5 || myUnitX - enemyX > -5) {
-            if (myUnitY - enemyY > 5 || myUnitY - enemyY > -5) {
+        if (myUnitX - enemyX > 2.5 || myUnitX - enemyX > -2.5) {
+            if (myUnitY - enemyY > 2.5 || myUnitY - enemyY > -2.5) {
                 return true;
             }
         }
@@ -379,6 +385,7 @@ public class StarKIBot extends AbstractBot {
                     attacker.stop();
                 }
                 attacker.queueAttack(getEnemyTanks().get(0));
+                printDebugString("Attacking enemy TANKS!");
             }
             queuedTarget = "enemyTanks";
         } else if (getEnemySoldiers().size() > 0) {
@@ -387,6 +394,7 @@ public class StarKIBot extends AbstractBot {
                     attacker.stop();
                 }
                 attacker.queueAttack(getEnemySoldiers().get(0));
+                printDebugString("Attacking enemy SOLDIERS!");
             }
             queuedTarget = "enemySoldiers";
         } else if (getEnemyMedics().size() > 0) {
@@ -395,11 +403,13 @@ public class StarKIBot extends AbstractBot {
                     attacker.stop();
                 }
                 attacker.queueAttack((getEnemyMedics().get(0)));
+                printDebugString("Attacking enemy MEDICS!");
             }
             queuedTarget = "enemyMedics";
         } else if (getEnemyBigTanks().size() > 0) {
             for (Unit attacker: getMyUnits()) {
                 attacker.queueAttack(getEnemyBigTanks().get(0));
+                printDebugString("Attacking enemy BIGTANKS!");
             }
         }
     }
