@@ -22,7 +22,7 @@ repositories {
     maven {
         url uri('./libs')
     }
-    maven{
+    maven {
         url = "https://jitpack.io"
     }
     jcenter()
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'de.uni-passau.fim.sommercamp', name: 'SC2', version: '2.1.8'
+    compile group: 'de.uni-passau.fim.sommercamp', name: 'SC2', version: '2.1.9'
     runtime Os.isFamily(Os.FAMILY_UNIX) ?
             "com.github.boehmseb:ocraft-s2client:b8ae4fc23d" :
             "com.github.fheck:ocraft-s2client:e469bc68b7"
@@ -56,8 +56,8 @@ application {
     mainClassName = mainClass
 }
 
-task run (type: JavaExec, dependsOn: classes, overwrite: true) {
-    if(project.hasProperty('appargs')){
+task run(type: JavaExec, dependsOn: classes, overwrite: true) {
+    if (project.hasProperty('appargs')) {
         args(appargs.split(','))
     }
     args += "-gui"
