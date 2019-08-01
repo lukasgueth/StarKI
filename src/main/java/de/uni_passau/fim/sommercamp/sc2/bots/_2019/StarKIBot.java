@@ -383,9 +383,23 @@ public class StarKIBot extends AbstractBot {
 
         for (Unit attacker: marines) {
             if (getEnemySoldiers().size() > 0) {
-                attacker.queueAttack(getEnemySoldiers().get(0));
-                printDebugString("Attacking enemySoldier_0 on Marines-Map!");
-            } else {
+                if (getMySoldiers().size() > 0) {
+                    myScout.move(getMySoldiers().get(getMySoldiers().size() - 1).getPosition());
+                    if(scoutNearTeam() == true){
+                        moveTeam("towardsEnemy");
+                        attacker.queueAttack(getEnemySoldiers().get(0));
+                        printDebugString("Attacking enemySoldier_0 on Marines-Map!");
+                    }
+                    else {
+                        moveTeam("towardsEnemy");
+                        printDebugString("marinesAttack scoutNearTeam false");
+                    }
+                }
+                else {
+                    attacker.queueAttack(getEnemySoldiers().get(0));
+                }
+            }
+            else {
                 printDebugString("All enemy marines are either not yet discovered or dead!");
             }
         }
