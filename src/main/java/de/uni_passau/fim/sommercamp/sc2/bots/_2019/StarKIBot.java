@@ -14,15 +14,15 @@ package de.uni_passau.fim.sommercamp.sc2.bots._2019;
  */
 public class StarKIBot extends AbstractBot {
 
-    String name;
-    List<Unit> workers;
-    Vec2 enemyLocation;
-    Unit myScout;
-    Boolean scouting;
-    Boolean scoutNextToTeam;
-    List<Integer> unitsWaitedForMajorUnitsToMove;
-    boolean runDiagonale;
-    String queuedTarget = "enemyTanks";
+    private String name;
+    private List<Unit> workers;
+    private Vec2 enemyLocation;
+    private Unit myScout;
+    private Boolean scouting;
+    private Boolean scoutNextToTeam;
+    private List<Integer> unitsWaitedForMajorUnitsToMove;
+    private boolean runDiagonale;
+    private String queuedTarget = "enemyTanks";
 
 
     /**
@@ -167,12 +167,9 @@ public class StarKIBot extends AbstractBot {
     // Generates Map-Diagonale
     private Vec2 diagonale() {
         Vec2 diagonale;
-        float x, y, length;
-        float scale;
+        float length;
         diagonale = getMapSize().getB().scaled(0.5f);
         length = diagonale.getLength();
-        x = diagonale.getX();
-        y = diagonale.getY();
         diagonale = getMapSize().getB().normal();
         diagonale = diagonale.plus(getMapSize().getB().scaled(0.1f));
 
@@ -185,8 +182,8 @@ public class StarKIBot extends AbstractBot {
             diagonale = diagonale.scaled(length / 3.5f);
         }
 
-        printDebugString("X: " + Float.toString(diagonale.getX()));
-        printDebugString("Y: " + Float.toString(diagonale.getY()));
+        printDebugString("X: " + diagonale.getX());
+        printDebugString("Y: " + diagonale.getY());
         printDebugString("Vector has been found");
         return diagonale;
     }
@@ -293,7 +290,7 @@ public class StarKIBot extends AbstractBot {
                     }
                 }
                 break;
-            case "backwards":
+            /*case "backwards":
                 if (!healerHealing()) {
                     if(getEnemyMedics().size() != 0) {
 
@@ -336,7 +333,7 @@ public class StarKIBot extends AbstractBot {
                 else {
                     printDebugString("Backwards !healerHealing Units should withdraw/retreat but somehow it's ELSE");
                 }
-                break;
+                break;*/
         }
     }
 
@@ -369,23 +366,6 @@ public class StarKIBot extends AbstractBot {
      * Healer methods
      */
 
-    private boolean healerHealing() {
-        boolean healerAreHealing = true;
-
-        if (getMyMedics().size() > 0) {
-            for (Unit medic: getMyMedics()) {
-                if (medic.getEnergy() != medic.getMaxEnergy()) {
-                    printDebugString("healerHealing is FALSE");
-                    healerAreHealing = false;
-                } else {
-                    printDebugString("healerHealing is TRUE");
-                }
-            }
-        }
-        printDebugString("Healer are healing.");
-        return healerAreHealing;
-    }
-
     /* */
 
     /**
@@ -399,7 +379,7 @@ public class StarKIBot extends AbstractBot {
                 if (!queuedTarget.equals("enemyTanks")) {
                     attacker.stop();
                 }
-                attacker.queueAttack(getEnemyTanks().get(0));
+                    attacker.queueAttack(getEnemyTanks().get(0));
             }
         } else if (getEnemySoldiers().size() > 0) {
             for (Unit attacker: getMyUnits()) {
@@ -449,13 +429,8 @@ public class StarKIBot extends AbstractBot {
             }
         }
 
-        boolean sfoi = healerHealing();
-        if (!healerHealing()) {
-            moveTeam("backwards");
-        }
-
         if (getMyUnits().size() > 0) {
-            if (!foundEnemy() && scoutNextToTeam == true) {
+            if (!foundEnemy() && scoutNextToTeam) {
                 printDebugString("No enemy found!");
                 if (getGameLoop() % 100 == 1) {
                     scout();
