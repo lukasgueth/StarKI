@@ -1,16 +1,13 @@
 package de.uni_passau.fim.sommercamp.sc2.bots._2019;
 
-        import com.github.ocraft.s2client.protocol.data.Units;
-        import com.github.ocraft.s2client.protocol.unit.UnitOrder;
-        import de.uni_passau.fim.sommercamp.sc2.bots.AbstractBot;
-        import de.uni_passau.fim.sommercamp.sc2.bots.Unit;
-        import de.uni_passau.fim.sommercamp.sc2.bots.util.Vec2;
-        import org.apache.commons.math3.geometry.partitioning.BSPTreeVisitor;
-        import org.apache.logging.log4j.core.config.Order;
+import com.github.ocraft.s2client.protocol.data.Units;
+import de.uni_passau.fim.sommercamp.sc2.bots.AbstractBot;
+import de.uni_passau.fim.sommercamp.sc2.bots.Unit;
+import de.uni_passau.fim.sommercamp.sc2.bots.util.Vec2;
 
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.PrimitiveIterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PrimitiveIterator;
 
 /**
  * Empty bot for the Sommercamp SC2 interface.
@@ -23,11 +20,9 @@ public class StarKIBot extends AbstractBot {
     Unit myScout;
     Boolean scouting;
     Boolean scoutNextToTeam;
-    List<Integer> unitsWaitedForMajorUnitsToMove;
+    Integer unitsWaitedForMajorUnitsToMove;
     boolean runDiagonale;
     String queuedTarget = "enemyTanks";
-    List<Float> teamPosition = new ArrayList();
-    boolean splitted = false;
 
 
     /**
@@ -141,74 +136,20 @@ public class StarKIBot extends AbstractBot {
 
     // When a Unit`s HP drops below 50%, the unit asks a medic for its position and move towards it
     private void checkHP() {
+        boolean unitLow = false;
         for (Unit unit : getMyUnits()) {
-            if (unit.isAliveAndVisible() && unit.getHealth() / unit.getMaxHealth() <= 0.70) {
+            if (unit.isAliveAndVisible() && unit.getHealth() / unit.getMaxHealth() <= 0.50) {
                 //Vec2 position = unit.getPosition();
                 for (Unit medic : getMyMedics()) {
-
-                    boolean healingIsQueued = medic.getOrders().stream().anyMatch(order ->
-                            order.getTargetedUnitTag().map(this::getUnit).map(u -> u.equals(unit)).orElse(false)
-                    );
-                    if(!healingIsQueued){
-                        medic.stop();
-                    }
                     medic.queueHeal(unit);
+                    unitLow = true;
                 }
             }
-            else{
+        }
 
-                List<Unit> medics = new ArrayList<>();
-                for (Unit medic: getMyMedics()){
-                    int i = 0;
-                    medics.add(i,medic);
-                    i++;
-                }
-                if(getMyBigTanks().size()>0)
-                {
-                    for(Unit follower: getMyBigTanks()){
-                        if(!follower.getType().equals(myScout)){
-
-                            if(getMyMedics().size() >0){
-                                medics.get(0).move(follower.getPosition().scaled(0.90f));
-                            }
-                            if(getMyMedics().size() > 1){
-                                medics.get(1).move(follower.getPosition().scaled(0.85f));
-                            }
-                        }
-                    }
-                }
-                else if(getMyTanks().size()>0)
-                {
-                    for(Unit follower: getMyTanks()){
-                        if(!follower.getType().equals(myScout)){
-
-                            if(getMyMedics().size() >0){
-                                medics.get(0).move(follower.getPosition().scaled(0.90f));
-                            }
-                            if(getMyMedics().size() > 1){
-                                medics.get(1).move(follower.getPosition().scaled(0.85f));
-                            }
-                        }
-                    }
-                }
-                else if(getMySoldiers().size()>0)
-                {
-                    for(Unit follower: getMySoldiers()){
-                        if(!follower.getType().equals(myScout)){
-
-                            if(getMyMedics().size() >0){
-                                medics.get(0).move(follower.getPosition().scaled(0.90f));
-                            }
-                            if(getMyMedics().size() > 1){
-                                medics.get(1).move(follower.getPosition().scaled(0.85f));
-                            }
-                        }
-                    }
-                }
-                else{
-                    medics.get(0).move(getRandomPointOnMap());
-                    medics.get(1).move(getRandomPointOnMap());
-                }
+        if (!unitLow) {
+            for (Unit medic: getMyMedics()) {
+                medic.heal(getMyUnits().get(0));
             }
         }
     }
@@ -218,23 +159,28 @@ public class StarKIBot extends AbstractBot {
         // Check if at least one bigTank is alive and pick it as a scout
         // Else if pick a normal tank
         // Else if pick a marine
-         if (getMyBigTanks().size() > 0) {
+        if (getMyBigTanks().size() > 0) {
             myScout = getMyBigTanks().get(0);
         } else if (getMyTanks().size() > 0) {
             myScout = getMyTanks().get(0);
-        } else if (getMySoldiers().size() > 0) {
-             myScout = getMySoldiers().get(0);
-         } else {
+        } else {
+            if (getMySoldiers().size() > 0) {
+                myScout = getMySoldiers().get(0);
+            } else {
                 myScout = getMyMedics().get(0);
+            }
         }
     }
 
     // Generates Map-Diagonale
     private Vec2 diagonale() {
         Vec2 diagonale;
-        float length;
+        float x, y, length;
+        float scale;
         diagonale = getMapSize().getB().scaled(0.5f);
         length = diagonale.getLength();
+        x = diagonale.getX();
+        y = diagonale.getY();
         diagonale = getMapSize().getB().normal();
         diagonale = diagonale.plus(getMapSize().getB().scaled(0.1f));
 
@@ -247,8 +193,8 @@ public class StarKIBot extends AbstractBot {
             diagonale = diagonale.scaled(length / 3.5f);
         }
 
-        printDebugString("X: " + diagonale.getX());
-        printDebugString("Y: " + diagonale.getY());
+        printDebugString("X: " + Float.toString(diagonale.getX()));
+        printDebugString("Y: " + Float.toString(diagonale.getY()));
         printDebugString("Vector has been found");
         return diagonale;
     }
@@ -290,48 +236,49 @@ public class StarKIBot extends AbstractBot {
 
         printDebugString("Cleared orders of Scout.");
 
-         if (getMySoldiers().size() > 0) {
+        if (getMySoldiers().size() > 0) {
             myScout.move(getMySoldiers().get(getMySoldiers().size() - 1).getPosition());
         } else if (getMyTanks().size() > 0) {
             myScout.move(getMyTanks().get(getMyTanks().size() - 1).getPosition());
         } else if (getMyBigTanks().size() > 0) {
             myScout.move(getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition());
         } else if (getMyMedics().size() > 0) {
-             myScout.move(getMyMedics().get(0).getPosition());
-         }
+            myScout.move(getMyMedics().get(0).getPosition());
+        }
 
         scoutNextToTeam = false;
     }
 
     private boolean scoutNearTeam() {
-        scoutNextToTeam = false;
+        Boolean nearTeam = false;
 
+        List<Float> teamPosition = new ArrayList();
         if (getMySoldiers().size() > 0) {
-            teamPosition.add(0, getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getX());
-            teamPosition.add(1, getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getY());
+            teamPosition.add(0, getMySoldiers().get(0).getPosition().getX());
+            teamPosition.add(1, getMySoldiers().get(0).getPosition().getY());
         } else if (getMyTanks().size() > 0) {
-            teamPosition.add(0, getMyTanks().get(getMyTanks().size() - 1).getPosition().getX());
-            teamPosition.add(1, getMyTanks().get(getMyTanks().size() - 1).getPosition().getY());
+            teamPosition.add(0, getMyTanks().get(0).getPosition().getX());
+            teamPosition.add(1, getMyTanks().get(0).getPosition().getY());
         } else if (getMyBigTanks().size() > 0) {
-            teamPosition.add(0, getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition().getX());
-            teamPosition.add(1, getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition().getY());
+            teamPosition.add(0, getMyBigTanks().get(0).getPosition().getX());
+            teamPosition.add(1, getMyBigTanks().get(0).getPosition().getY());
         } else if (getMyMedics().size() > 0) {
-            teamPosition.add(0, getMyMedics().get(getMyMedics().size() - 1).getPosition().getX());
-            teamPosition.add(1, getMyMedics().get(getMyMedics().size() - 1).getPosition().getY());
+            teamPosition.add(0, getMyMedics().get(0).getPosition().getX());
+            teamPosition.add(1, getMyMedics().get(0).getPosition().getY());
         }
 
         printDebugString("Teamposition: (" + teamPosition.get(0) + "," + teamPosition.get(1));
         printDebugString("Scoutposition: (" + myScout.getPosition().getX() + "," + myScout.getPosition().getY());
         if (myScout.isAliveAndVisible()) {
-            if (teamPosition.get(0) - myScout.getPosition().getX() < 3 && teamPosition.get(0) - myScout.getPosition().getX() > -3) {
-                if (teamPosition.get(1) - myScout.getPosition().getY() < 3 && teamPosition.get(1) - myScout.getPosition().getY() > -3) {
+            if (teamPosition.get(0) - myScout.getPosition().getX() < 2 && teamPosition.get(0) - myScout.getPosition().getX() > -2) {
+                if (teamPosition.get(1) - myScout.getPosition().getY() < 2 && teamPosition.get(1) - myScout.getPosition().getY() > -2) {
                     printDebugString("Scout is near Team.");
-                    scoutNextToTeam = true;
+                    nearTeam = true;
                 }
             }
         }
 
-        return scoutNextToTeam;
+        return nearTeam;
     }
 
     /* */
@@ -346,53 +293,28 @@ public class StarKIBot extends AbstractBot {
     private void moveTeam(String mode, Vec2 target) {
         switch (mode) {
             case "towardsEnemy":
-                printDebugString("moveTeam() wurde gecallt.");
-                if (unitsWaitedForMajorUnitsToMove.get(0) == 0) {
-                    for (Unit myUnit : getMyUnits()) {
-                        if (myUnit.getType().equals(Units.TERRAN_MEDIC) || myUnit.getType().equals(Units.TERRAN_MARAUDER)) {
-                            if (!myUnit.equals(myScout)) {
-                                myUnit.move(enemyLocation);
-                            }
-
-                            if (myUnit.getType().equals(Units.TERRAN_MEDIC)) {
-                                printDebugString("I am a meidc!");
-                            }
+                for (Unit myUnit: getMyUnits()) {
+                    if (!myUnit.getType().equals(Units.TERRAN_MARINE)) {
+                        if (!foundEnemy()) {
+                            myUnit.move(enemyLocation);
                         }
                     }
-                    printDebugString("Medics and Marauder start moving.");
-                    unitsWaitedForMajorUnitsToMove.add(0, unitsWaitedForMajorUnitsToMove.get(0) + 1);
                 }
 
-                if (unitsWaitedForMajorUnitsToMove.get(1) < 41 && unitsWaitedForMajorUnitsToMove.get(0) > 0) {
-                    for (Unit myUnit : getMyUnits()) {
-                        if (myUnit.getType().equals(Units.TERRAN_FIREBAT)) {
-                            if (!myUnit.equals(myScout)) {
-                                myUnit.move(enemyLocation);
-                            }
-                        }
-                    }
-                    printDebugString("Firebat starts moving.");
-                    unitsWaitedForMajorUnitsToMove.add(1, unitsWaitedForMajorUnitsToMove.get(1) + 1);
-                }
-
-                if (unitsWaitedForMajorUnitsToMove.get(1) == 40) {
-                    for (Unit myUnit : getMyUnits()) {
+                if (unitsWaitedForMajorUnitsToMove > 3) {
+                    for (Unit myUnit: getMyUnits()) {
                         if (myUnit.getType().equals(Units.TERRAN_MARINE)) {
-                            if (!myUnit.equals(myScout)) {
+                            if (!foundEnemy()) {
                                 myUnit.move(enemyLocation);
                             }
                         }
                     }
                 }
 
-                if (!teamNextToEnemy() && scoutNearTeam()) {
-                    printDebugString("Scout ist near team.");
-                    myScout.move(enemyLocation);
-                }
-
+                unitsWaitedForMajorUnitsToMove += 1;
                 break;
-            }
         }
+    }
 
     private boolean teamNextToEnemy() {
         float myUnitX = 0;
@@ -400,44 +322,21 @@ public class StarKIBot extends AbstractBot {
         float enemyX = enemyLocation.getX();
         float enemyY = enemyLocation.getY();
 
-        boolean nextToEnemy = false;
+        if(getMyMedics().size() > 0) {
+            myUnitX = getMyMedics().get(0).getPosition().getX();
+            myUnitY = getMyMedics().get(0).getPosition().getY();;
+        } else if (getMySoldiers().size() > 0) {
+            myUnitX = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getX();
+            myUnitY = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getY();
+        }
 
-
-        if (!scoutNearTeam()) {
-            if (getMyMedics().size() > 0) {
-                myUnitX = getMyMedics().get(0).getPosition().getX();
-                myUnitY = getMyMedics().get(0).getPosition().getY();
-                ;
-            } else if (getMySoldiers().size() > 0) {
-                myUnitX = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getX();
-                myUnitY = getMySoldiers().get(getMySoldiers().size() - 1).getPosition().getY();
-            } else if (getMyTanks().size() > 0) {
-                myUnitX = getMyTanks().get(getMyTanks().size() - 1).getPosition().getX();
-                myUnitY = getMyTanks().get(getMyTanks().size() - 1).getPosition().getY();
-            } else if (getMyBigTanks().size() > 0) {
-                myUnitX = getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition().getX();
-                myUnitY = getMyBigTanks().get(getMyBigTanks().size() - 1).getPosition().getY();
-            }
-
-            if (myUnitX - enemyX > 2.5 || myUnitX - enemyX > -2.5) {
-                if (myUnitY - enemyY > 2.5 || myUnitY - enemyY > -2.5) {
-                    nextToEnemy = true;
-                }
-            }
-        } else {
-            for (Unit myUnit : getMyUnits()) {
-                myUnitX = myUnit.getPosition().getX();
-                myUnitY = myUnit.getPosition().getY();
-
-                if (myUnitX - enemyX > 2.5 || myUnitX - enemyX > -2.5) {
-                    if (myUnitY - enemyY > 2.5 || myUnitY - enemyY > -2.5) {
-                        nextToEnemy = true;
-                    }
-                }
+        if (myUnitX - enemyX > 2.5 || myUnitX - enemyX > -2.5) {
+            if (myUnitY - enemyY > 2.5 || myUnitY - enemyY > -2.5) {
+                return true;
             }
         }
 
-        return nextToEnemy;
+        return false;
     }
 
     /* */
@@ -445,6 +344,23 @@ public class StarKIBot extends AbstractBot {
     /**
      * Healer methods
      */
+
+    private boolean healerHealing() {
+        boolean healerAreHealing = true;
+
+        if (getMyMedics().size() > 0) {
+            for (Unit medic: getMyMedics()) {
+                if (medic.getEnergy() != medic.getMaxEnergy()) {
+                    printDebugString("healerHealing is FALSE");
+                    healerAreHealing = false;
+                } else {
+                    printDebugString("healerHealing is TRUE");
+                }
+            }
+        }
+        printDebugString("Healer are healing.");
+        return healerAreHealing;
+    }
 
     /* */
 
@@ -464,21 +380,8 @@ public class StarKIBot extends AbstractBot {
         }
     }
 
-    private void splitUnits() {
-        for (int i=0; i < getMyUnits().size(); i++) {
-            if (getMyUnits().get(i).getType().equals(Units.TERRAN_MARINE)) {
-                if (i % 2 != 1) {
-                    getMyUnits().get(i).move(getMyUnits().get(i).getPosition().plus(Vec2.of(0, 5 * i)));
-                } else {
-                    getMyUnits().get(i).move(getMyUnits().get(i).getPosition().plus(Vec2.of(0, -5 * i)));
-                }
-            }
-        }
-    }
-
     private void marinesAttack() {
         printDebugString("This is marinesAttack!");
-
 
         List<Unit> marines = new ArrayList<>();
 
@@ -488,73 +391,47 @@ public class StarKIBot extends AbstractBot {
 
         for (Unit attacker: marines) {
             if (getEnemySoldiers().size() > 0) {
-                if (getMySoldiers().size() > 0) {
-                    attacker.queueAttack(getEnemySoldiers().get(0));
-                    printDebugString("Attacking enemySoldier_0 on Marines-Map!");
-                }
-                else {
-                    attacker.queueAttack(getEnemySoldiers().get(0));
-                }
-            }
-            else {
+                attacker.queueAttack(getEnemySoldiers().get(0));
+                printDebugString("Attacking enemySoldier_0 on Marines-Map!");
+            } else {
                 printDebugString("All enemy marines are either not yet discovered or dead!");
             }
         }
     }
 
     private void intellegentAttack() {
-        scoutNextToTeam = true;
-
         if (getEnemyTanks().size() > 0) {
             printDebugString("Now attacking their tanks.");
             for (Unit attacker: getMyUnits()) {
-            if (!queuedTarget.equals("enemyTanks")) {
-                attacker.stop();
-            }
-            attacker.queueAttack(getEnemyTanks().get(0));
-            printDebugString("Attacking enemy TANKS!");
-        }
-        queuedTarget = "enemyTanks";
-    } else if (getEnemySoldiers().size() > 0) {
-            int counter = 0;
-        for (Unit attacker: getMyUnits()) {
-            if (getEnemyTanks().size() == 0 && !queuedTarget.equals("enemySoldiers")) {
-                attacker.stop();
-            }
-            if (attacker.canAttack()) {
-                counter++;
-            }
-        }
-
-        if (counter >= 4 && getEnemySoldiers().size() > 1) {
-            int units = getMyUnits().size();
-            for (int i=0; i < units / 2; i++) {
-                getMyUnits().get(i).queueAttack(getEnemySoldiers().get(0));
-            }
-
-            for (int i=units/2; i < units; i++) {
-                getMyUnits().get(i).queueAttack(getEnemySoldiers().get(1));
-            }
-        } else {
-            for (Unit attacker: getMyUnits()) {
-                attacker.queueAttack(getEnemySoldiers().get(0));
-            }
-        }
-
-        queuedTarget = "enemySoldiers";
-    } else if (getEnemyBigTanks().size() > 0) {
-            for (Unit attacker: getMyUnits()) {
-                if (getEnemySoldiers().size() == 0 && !queuedTarget.equals("enemyBigTanks")) {
+                if (!queuedTarget.equals("enemyTanks")) {
                     attacker.stop();
                 }
-                attacker.queueAttack((getEnemyBigTanks().get(0)));
-                printDebugString("Attacking enemy BigTanks!");
+                attacker.queueAttack(getEnemyTanks().get(0));
+                printDebugString("Attacking enemy TANKS!");
             }
-            queuedTarget = "enemyBigTanks";
+            queuedTarget = "enemyTanks";
+        } else if (getEnemySoldiers().size() > 0) {
+            for (Unit attacker: getMyUnits()) {
+                if (getEnemyTanks().size() == 0 && !queuedTarget.equals("enemySoldiers")) {
+                    attacker.stop();
+                }
+                attacker.queueAttack(getEnemySoldiers().get(0));
+                printDebugString("Attacking enemy SOLDIERS!");
+            }
+            queuedTarget = "enemySoldiers";
         } else if (getEnemyMedics().size() > 0) {
             for (Unit attacker: getMyUnits()) {
-                attacker.queueAttack(getEnemyMedics().get(0));
-                printDebugString("Attacking enemy Medics!");
+                if (getEnemySoldiers().size() == 0 && !queuedTarget.equals("enemyMedics")) {
+                    attacker.stop();
+                }
+                attacker.queueAttack((getEnemyMedics().get(0)));
+                printDebugString("Attacking enemy MEDICS!");
+            }
+            queuedTarget = "enemyMedics";
+        } else if (getEnemyBigTanks().size() > 0) {
+            for (Unit attacker: getMyUnits()) {
+                attacker.queueAttack(getEnemyBigTanks().get(0));
+                printDebugString("Attacking enemy BIGTANKS!");
             }
         }
     }
@@ -576,14 +453,13 @@ public class StarKIBot extends AbstractBot {
             printDebugString("Gameloop 1 found!");
             scoutNextToTeam = true;
 
-            unitsWaitedForMajorUnitsToMove = new ArrayList<>();
-            for (int i=0; i < 4; i++) {
-                unitsWaitedForMajorUnitsToMove.add(i, 0);
-            }
+            unitsWaitedForMajorUnitsToMove = 0;
         }
 
+        mapDetermination();
+
         if (getMyUnits().size() > 0) {
-            if (!foundEnemy() && scoutNextToTeam) {
+            if (!foundEnemy() && scoutNextToTeam == true) {
                 printDebugString("No enemy found!");
                 if (getGameLoop() % 100 == 1) {
                     scout();
@@ -598,33 +474,20 @@ public class StarKIBot extends AbstractBot {
                     returnScoutToTeam();
                 }
 
-                if (!teamNextToEnemy()) {
-                    Boolean fighting = false;
-                    // Check if not someone is fighting with somebody
-                    for (Unit myUnit: getMyUnits()) {
-                        if (myUnit.getEngagedTarget().isPresent()) {
-                            fighting = true;
-                        }
-                    }
+                if (scoutNearTeam() && !teamNextToEnemy()) {
+                    printDebugString("Scout is back Home!");
 
-                    if (!fighting) {
-                        moveTeam("towardsEnemy");
-                    } else {
-                        intellegentAttack();
-                    }
+                    moveTeam("towardsEnemy");
                 }
-
                 printDebugString("Enemy is at: " + enemyLocation.getX() + "," + enemyLocation.getY());
 
                 if (teamNextToEnemy()) {
                     printDebugString("Team is next to Enemy!");
                     intellegentAttack();
-                    // mapDetermination();
                 }
             }
         }
-        if(getMyMedics().size() >0){
-           checkHP();
-        }
+
+        checkHP();
     }
 }
